@@ -1,17 +1,13 @@
+import main as viewer
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import Column, Integer, String, VARCHAR, ForeignKey
 from sqlalchemy.orm import relationship
 
-DATABASE_USER = 'abc'
-DATABASE_PASSWD = 'abc123'
 
-app = Flask(__name__)
-#DataBase Config
-app.config['SQLALCHEMY_DATABASE_URI'] = f'mysql+pymysql://{DATABASE_USER}:{DATABASE_PASSWD}@localhost/AdminDashboard'
-app.config['SECRET_KEY'] = 'your_secret_key'
+
 #initialize database
-db = SQLAlchemy(app)
+db = SQLAlchemy(viewer.app)
 
 
 #Database Tables
@@ -49,6 +45,11 @@ class Track(db.Model):
     PaperID = Column(Integer, ForeignKey('PAPERS.PaperID'), nullable=True)
     paper = relationship("Paper", back_populates="track")
 
-if __name__ == '__main__':
-    with app.app_context():
+class User(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(150), unique=True, nullable=False)
+    password = db.Column(db.String(150), nullable=False)
+
+def CreateTables():
+    with viewer.app.app_context():
         db.create_all()
