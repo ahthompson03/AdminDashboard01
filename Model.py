@@ -1,3 +1,4 @@
+
 import main as viewer
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
@@ -17,7 +18,7 @@ class Authors(db.Model):
     AuthorID = Column(Integer, primary_key=True, autoincrement=True)
     FirstName = Column(VARCHAR(25), nullable=False)
     LastName = Column(VARCHAR(25), nullable=False)
-    papers = relationship("Paper", back_populates="author")
+    papers = relationship("Papers", back_populates="author")
 
 class Papers(db.Model):
     __tablename__ = 'PAPERS'
@@ -26,7 +27,7 @@ class Papers(db.Model):
     Title = Column(VARCHAR(200), unique = True, nullable=False)
     AuthorID = Column(Integer, ForeignKey('AUTHORS.AuthorID'), nullable=False)
     ReviewerID = Column(Integer, ForeignKey('REVIEWERS.ReviewerID'), nullable=True)
-    author = relationship("Author", back_populates="papers")
+    author = relationship("Authors", back_populates="papers")
     reviewer = relationship("Reviewer", back_populates="papers")
     track = relationship("Track", back_populates="paper")
 
@@ -36,6 +37,7 @@ class Reviewer(db.Model):
     ReviewerID = Column(Integer, primary_key=True, autoincrement=True)
     FirstName = Column(VARCHAR(25), nullable=False)
     LastName = Column(VARCHAR(25), nullable=False)
+    papers = relationship("Papers", back_populates="reviewer")
 
 class Track(db.Model):
     __tablename__ = 'TRACKS'
@@ -43,7 +45,7 @@ class Track(db.Model):
     TrackID = Column(Integer, primary_key=True, autoincrement=True)
     Name = Column(String(100), nullable=False)
     PaperID = Column(Integer, ForeignKey('PAPERS.PaperID'), nullable=True)
-    paper = relationship("Paper", back_populates="track")
+    paper = relationship("Papers", back_populates="track")
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)

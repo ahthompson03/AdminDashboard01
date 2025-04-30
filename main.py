@@ -14,12 +14,12 @@ app.config['SQLALCHEMY_DATABASE_URI'] = f'mysql+pymysql://{DATABASE_USER}:{DATAB
 app.config['SECRET_KEY'] = 'your_secret_key'
 bcrypt = Bcrypt(app)
 
-username = 'test@jack.com'
+#username = 'test@jack.com'
 
 
 @app.route('/')
 def Dashboard():
-    return render_template('Dashboard.html', username=username)
+    return render_template('Dashboard.html')
 
 @app.route('/reviewers')
 def Reviewer():
@@ -56,7 +56,7 @@ def login():
         if user and bcrypt.check_password_hash(user.password, password):
             session['user_id'] = user.id
             flash('Login successful!', 'success')
-            return redirect(url_for('dashboard'))
+            return redirect(url_for('/papers'))
         else:
             flash('Invalid credentials. Please try again.', 'danger')
     return render_template('login.html')
