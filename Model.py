@@ -1,15 +1,11 @@
-
-import main as viewer
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import Column, Integer, String, VARCHAR, ForeignKey
 from sqlalchemy.orm import relationship
 
 
-
 #initialize database
-db = SQLAlchemy(viewer.app)
-
+db = SQLAlchemy()
 
 #Database Tables
 class Authors(db.Model):
@@ -52,6 +48,7 @@ class User(db.Model):
     username = db.Column(db.String(150), unique=True, nullable=False)
     password = db.Column(db.String(150), nullable=False)
 
-def CreateTables():
-    with viewer.app.app_context():
+def CreateTables(app):
+    with app.app_context():
         db.create_all()
+
