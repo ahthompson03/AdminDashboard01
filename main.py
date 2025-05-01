@@ -1,5 +1,3 @@
-import json
-
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
@@ -15,11 +13,13 @@ app = Flask(__name__)
 #DataBase Config
 app.config['SQLALCHEMY_DATABASE_URI'] = f'mysql+pymysql://{DATABASE_USER}:{DATABASE_PASSWD}@localhost/AdminDashboard'
 app.config['SECRET_KEY'] = 'your_secret_key'
+
 bcrypt = Bcrypt(app)
 Model.db.init_app(app)
 
 #username = 'test@jack.com'
 
+# ROUTES
 
 @app.route('/dash')
 def Dashboard():
@@ -39,13 +39,17 @@ def Paper():
                            #Author = queryResults[1],
                           # PaperID = queryResults[2])
 
+
 @app.route('/reviewers')
 def Reviewer():
     return render_template('Reviewer.html')
 
+
 @app.route('/authors')
 def Author():
-    return render_template('Author.html')
+    authors = Authors.query.all()
+    return render_template('Author.html', authors=authors)
+
 
 
 
@@ -63,6 +67,7 @@ def register():
         return redirect(url_for('login'))
     return render_template('register.html')
 
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
@@ -77,6 +82,7 @@ def login():
             flash('Invalid credentials. Please try again.', 'danger')
     return render_template('login.html')
 
+
 @app.route('/dashboard')
 def dashboard():
     if 'user_id' not in session:
@@ -84,11 +90,25 @@ def dashboard():
         return redirect(url_for('login'))
     return render_template('AdminDashboard.html')
 
+
 @app.route('/logout')
 def logout():
     session.pop('user_id', None)
     flash('You have been logged out.', 'info')
     return redirect(url_for('login'))
+
+
+@app.route('/add_author', methods=['POST'])
+def add_author():
+    first_name = request.form['first_name']
+    last_name = request.form['last_name']
+
+    new_author = Authors(FirstName=first_name, LastName=last_name)
+    db.session.add(new_author)
+    db.session.commit()
+
+    flash('Author added successfully!', 'success')
+    return redirect(url_for('Author'))
 
 
 if __name__ == '__main__':
