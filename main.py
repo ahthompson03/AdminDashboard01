@@ -59,6 +59,10 @@ def delete_reviewer():
     reviewer_id = request.form['reviewer_id']
     reviewer = Model.Reviewers.query.get(reviewer_id)
 
+    if not reviewer:
+        flash(f"No Reviewer found with ID: {reviewer_id}.", "warning")
+        return redirect(url_for('Reviewer'))
+
     # Optional: Remove paper associations first
     Model.Papers.query.filter_by(ReviewerID=reviewer_id).update({Model.Papers.ReviewerID: None})
 
@@ -132,6 +136,10 @@ def add_author():
 def delete_author():
     author_id = request.form['author_id']
     author = Model.Authors.query.get(author_id)
+
+    if not author:
+        flash(f"No author found with ID: {author_id}.", "warning")
+        return redirect(url_for('Author'))
 
     # First delete all papers linked to this author
     Model.Papers.query.filter_by(AuthorID=author_id).delete()
