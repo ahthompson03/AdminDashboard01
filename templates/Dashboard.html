@@ -11,12 +11,11 @@
             font-family: 'Inter', sans-serif;
         }
 
-         .topnav {
+        .topnav {
             background-color: #333;
             overflow: hidden;
         }
 
-        /* Style the links inside the navigation bar */
         .topnav a {
             float: left;
             color: #f2f2f2;
@@ -26,77 +25,78 @@
             font-size: 17px;
         }
 
-        /* Change the color of links on hover */
         .topnav a:hover {
             background-color: #ddd;
             color: black;
         }
 
-        /* Add a color to the active/current link */
-        .topnav a.Dashboard {
+        .topnav a.dashboard {
             background-color: #04AA6D;
             color: white;
         }
-                /* Add a color to the active/current link */
+
         .topnav a.Logout {
-            color: #f2f2f2;
-            text-align: center;
+            float: right;
             padding: 14px 40px;
             font-size: 17px;
             color: white;
-            float: right;
         }
 
-
+        .container {
+            max-width: 960px;
+            margin-left: auto;
+            margin-right: auto;
+            padding-left: 1rem;
+            padding-right: 1rem;
+        }
     </style>
 </head>
 <body class="bg-gray-100 p-6">
 
     <div class="topnav">
-        <a class = "Logout" href="logout">{{username}}</a>
-        <a class="Dashboard" href="dash">Dashboard</a>
-        <a href="papers">Papers</a>
-        <a href="reviewers">Reviewers</a>
-        <a href="authors">Authors</a>
-
+        <a class="Logout" href="logout">Username</a>
+        <a class="dashboard" href="dash">Dashboard</a>
+        <a class="Papers" href="papers">Papers</a>
+        <a class="reviewers" href="reviewers">Reviewers</a>
+        <a class="authors" href="authors">Authors</a>
     </div>
 
-    <br></br>
-    <h1 class="text-2xl font-semibold text-gray-800 mb-8">Dashboard</h1>
+    <div class="container">
+        <br>
+        <h1 class="text-2xl font-semibold text-gray-800 mb-8">Dashboard</h1>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <div class="bg-white rounded-lg shadow-md p-6">
-            <h2 class="text-lg font-semibold text-gray-700 mb-4">Reviewer Statistics</h2>
-            <ul class="list-disc list-inside space-y-2">
-                <li class="text-gray-600">Total Reviewers: <span id="total-reviewers" class="font-medium text-blue-600">0</span></li>
-                <li class="text-gray-600">Reviewers Without Papers: <span id="reviewers-without-papers" class="font-medium text-red-600">0</span></li>
-            </ul>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <h2 class="text-lg font-semibold text-gray-700 mb-4">Reviewer Statistics</h2>
+                <ul class="list-disc list-inside space-y-2">
+                    <li class="text-gray-600">Total Reviewers: <span id="total-reviewers" class="font-medium text-blue-600">0</span></li>
+                    <li class="text-gray-600">Reviewers Without Papers: <span id="reviewers-without-papers" class="font-medium text-red-600">0</span></li>
+                </ul>
+            </div>
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <h2 class="text-lg font-semibold text-gray-700 mb-4">Author Statistics</h2>
+                <ul class="list-disc list-inside space-y-2">
+                    <li class="text-gray-600">Total Authors: <span id="total-authors" class="font-medium text-blue-600">0</span></li>
+                </ul>
+            </div>
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <h2 class="text-lg font-semibold text-gray-700 mb-4">Paper Statistics</h2>
+                <ul class="list-disc list-inside space-y-2">
+                    <li class="text-gray-600">Total Papers: <span id="total-papers" class="font-medium text-blue-600">0</span></li>
+                    <li class="text-gray-600">Papers Missing Reviewers: <span id="papers-missing-reviewers" class="font-medium text-red-600">0</span></li>
+                </ul>
+            </div>
         </div>
-        <div class="bg-white rounded-lg shadow-md p-6">
-            <h2 class="text-lg font-semibold text-gray-700 mb-4">Author Statistics</h2>
-            <ul class="list-disc list-inside space-y-2">
-                <li class="text-gray-600">Total Authors: <span id="total-authors" class="font-medium text-blue-600">0</span></li>
-            </ul>
-        </div>
-        <div class="bg-white rounded-lg shadow-md p-6">
-            <h2 class="text-lg font-semibold text-gray-700 mb-4">Paper Statistics</h2>
-             <ul class="list-disc list-inside space-y-2">
-                <li class="text-gray-600">Total Papers: <span id="total-papers" class="font-medium text-blue-600">0</span></li>
-                <li class="text-gray-600">Papers Missing Reviewers: <span id="papers-missing-reviewers" class="font-medium text-red-600">0</span></li>
-            </ul>
-        </div>
-    </div>
 
-    <div class="bg-white rounded-lg shadow-md p-6 mt-8">
-        <h2 class="text-lg font-semibold text-gray-700 mb-4">Alerts</h2>
-        <ul id="alerts" class="list-disc list-inside space-y-2">
-            <li class="text-gray-600">No alerts at this time.</li>
-        </ul>
+        <div class="bg-white rounded-lg shadow-md p-6 mt-8">
+            <h2 class="text-lg font-semibold text-gray-700 mb-4">Alerts</h2>
+            <ul id="alerts" class="list-disc list-inside space-y-2">
+                <li class="text-gray-600">No alerts at this time.</li>
+            </ul>
+        </div>
     </div>
 
     <script>
-        // You would typically fetch this data from a server.
-        // For this example, we'll hardcode some data.
         document.getElementById('total-reviewers').textContent = {{ReviewerCount}};
         document.getElementById('total-authors').textContent = {{AuthorCount}};
         document.getElementById('total-papers').textContent = {{PaperCount}};
@@ -104,7 +104,7 @@
         document.getElementById('papers-missing-reviewers').textContent = {{PaperWithoutReviewer}};
 
         const alertsList = document.getElementById('alerts');
-        alertsList.innerHTML = ''; // Clear default message
+        alertsList.innerHTML = '';
         const alerts = [
             "Low reviewer availability for the 'Emerging Technologies' track.",
             "Deadline for paper submissions is in 7 days."
@@ -118,10 +118,10 @@
                 alertsList.appendChild(li);
             });
         } else {
-             const li = document.createElement('li');
-                li.textContent = "No alerts at this time.";
-                li.className = "text-gray-600";
-                alertsList.appendChild(li);
+            const li = document.createElement('li');
+            li.textContent = "No alerts at this time.";
+            li.className = "text-gray-600";
+            alertsList.appendChild(li);
         }
     </script>
 </body>
