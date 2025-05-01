@@ -1,3 +1,5 @@
+from idlelib.tree import TreeItem
+
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import Column, Integer, String, VARCHAR, ForeignKey
@@ -53,7 +55,7 @@ def Model(app):
 
 
 
-def DashBoardQuery():
+def DashBoardAnalytics():
 
     ReviewerCount = db.session.query(Reviewer.ReviewerID).count()
     PaperCount = db.session.query(Papers.PaperID).count()
@@ -70,4 +72,23 @@ def DashBoardQuery():
     'AuthorCount': AuthorCount,
     'PaperWithoutReviewer': PaperWithoutReviewer,
     'ReviewerWithoutPaper': ReviewerWithoutPaper
+
     }
+
+def PaperQuerys():
+    papers = db.session.query(Papers).all()
+    title = []
+    authorName = db.session.query(Authors.FirstName).join(Papers, Authors.AuthorID == Papers.AuthorID).order_by(Papers.Title).all()
+    paperID = []
+
+    for item in papers:
+        title.append(item.Title)
+        paperID.append(item.PaperID)
+
+    #tuple is used to protect the data since it will no longer need changed.
+    return (
+        title,
+        authorName,
+        paperID
+    )
+

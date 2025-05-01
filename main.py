@@ -1,3 +1,5 @@
+import json
+
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
@@ -21,13 +23,21 @@ Model.db.init_app(app)
 
 @app.route('/dash')
 def Dashboard():
-    queryResults = Model.DashBoardQuery()
+    queryResults = Model.DashBoardAnalytics()
     return render_template('Dashboard.html',
-                           ReviewerCount=queryResults['ReviewerCount'],
+                           ReviewerCount = queryResults['ReviewerCount'],
                            PaperCount = queryResults['PaperCount'],
                            AuthorCount = queryResults['AuthorCount'],
                            PaperWithoutReviewer = queryResults['PaperWithoutReviewer'],
                            ReviewerWithoutPaper = queryResults['ReviewerWithoutPaper'])
+
+@app.route('/papers')
+def Paper():
+    queryResults = Model.PaperQuerys()
+    return render_template('Papers.html',
+                           Title = json.dumps(queryResults[0]))
+                           #Author = queryResults[1],
+                          # PaperID = queryResults[2])
 
 @app.route('/reviewers')
 def Reviewer():
@@ -37,9 +47,7 @@ def Reviewer():
 def Author():
     return render_template('Author.html')
 
-@app.route('/papers')
-def Paper():
-    return render_template('Papers.html')
+
 
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -60,7 +68,7 @@ def login():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
-        user = DataBase.User.query.filter_by(username=username).first()
+        user = Model.User.query.filter_by(username=username).first()
         if user and bcrypt.check_password_hash(user.password, password):
             session['user_id'] = user.id
             flash('Login successful!', 'success')

@@ -53,7 +53,7 @@
 
     <div class="topnav">
         <a class = "Logout" href="logout">Username</a>
-        <a class="Dashboard" href="/">Dashboard</a>
+        <a class="Dashboard" href="dash">Dashboard</a>
         <a href="papers">Papers</a>
         <a href="reviewers">Reviewers</a>
         <a href="authors">Authors</a>
@@ -77,6 +77,9 @@
         <ul id="paper-list" class="list-disc list-inside space-y-2">
             <li>Paper data will be displayed here.</li>
         </ul>
+        {% for title in Title|safe %}
+        {{ title }}
+        {% endfor %}
     </div>
 
     <script>
@@ -103,11 +106,15 @@
 
         //  Populate the paper list (for demonstration)
         const paperList = document.getElementById('paper-list');
-        const papers = [
+
+       /* papers = [
             { id: 1, title: "A Novel Approach to...", authors: ["John Doe", "Jane Smith"] },
             { id: 2, title: "Machine Learning for...", authors: ["Alice Johnson"] },
             { id: 3, title: "Advances in Data...", authors: ["Bob Williams", "Mary Brown"] }
-        ];
+        ];*/
+
+        papers = [];
+        papers = {{Titles|safe}}
 
         paperList.innerHTML = ''; // Clear initial message
         papers.forEach(paper => {
