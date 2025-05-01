@@ -36,17 +36,23 @@
         <h1 class="text-2xl font-bold mb-4">Reviewer List</h1>
 
         <!-- Add Reviewer Form -->
-        <form action="{{ url_for('add_reviewer') }}" method="POST" class="mb-6 flex space-x-2">
-            <input type="text" name="first_name" placeholder="First Name" required class="p-2 border border-gray-300 rounded">
-            <input type="text" name="last_name" placeholder="Last Name" required class="p-2 border border-gray-300 rounded">
-            <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">Add Reviewer</button>
-        </form>
+ <div class="flex flex-wrap items-center gap-4 mb-6">
+    <!-- Add Reviewer -->
+    <span class="font-semibold mr-2">Add Reviewer:</span>
+    <input type="text" name="first_name" form="add-form" placeholder="First Name" required class="p-2 border border-gray-300 rounded w-40">
+    <input type="text" name="last_name" form="add-form" placeholder="Last Name" required class="p-2 border border-gray-300 rounded w-40">
+    <form action="{{ url_for('add_reviewer') }}" method="POST" id="add-form">
+        <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Add</button>
+    </form>
 
-        <!-- Delete Reviewer Form -->
-        <form action="{{ url_for('delete_reviewer') }}" method="POST" class="mb-6 flex space-x-2">
-            <input type="number" name="reviewer_id" placeholder="Enter Reviewer ID to Delete" required class="p-2 border border-red-300 rounded">
-            <button type="submit" class="bg-red-500 text-white px-4 py-2 rounded">Delete Reviewer</button>
-        </form>
+    <!-- Delete Reviewer -->
+    <span class="font-semibold ml-8 mr-2">Delete Reviewer by ID:</span>
+    <input type="number" name="reviewer_id" form="delete-form" placeholder="ID" required class="p-2 border border-gray-300 rounded w-32">
+    <form action="{{ url_for('delete_reviewer') }}" method="POST" id="delete-form">
+        <button type="submit" class="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700">Delete</button>
+    </form>
+</div>
+
 
         <!-- Reviewer Table -->
         <table class="min-w-full bg-white border border-gray-300">
