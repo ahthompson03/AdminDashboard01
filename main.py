@@ -1,8 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
-from Model import db, User, CreateTables
-#import Model as Model
+import Model as Model
 
 DATABASE_USER = 'abc'
 DATABASE_PASSWD = 'abc123'
@@ -15,13 +14,20 @@ app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = f'mysql+pymysql://{DATABASE_USER}:{DATABASE_PASSWD}@localhost/AdminDashboard'
 app.config['SECRET_KEY'] = 'your_secret_key'
 bcrypt = Bcrypt(app)
-db.init_app(app)
+Model.db.init_app(app)
+
 #username = 'test@jack.com'
 
 
 @app.route('/dash')
 def Dashboard():
-    return render_template('Dashboard.html')
+    queryResults = Model.DashBoardQuery()
+    return render_template('Dashboard.html',
+                           ReviewerCount=queryResults['ReviewerCount'],
+                           PaperCount = queryResults['PaperCount'],
+                           AuthorCount = queryResults['AuthorCount'],
+                           PaperWithoutReviewer = queryResults['PaperWithoutReviewer'],
+                           ReviewerWithoutPaper = queryResults['ReviewerWithoutPaper'])
 
 @app.route('/reviewers')
 def Reviewer():
@@ -42,9 +48,9 @@ def register():
         username = request.form['username']
         password = request.form['password']
         hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
-        user = User(username=username, password=hashed_password)
-        db.session.add(user)
-        db.session.commit()
+        user = Model.User(username=username, password=hashed_password)
+        Model.db.session.add(user)
+        Model.db.session.commit()
         flash('Registration successful! You can now log in.', 'success')
         return redirect(url_for('login'))
     return render_template('register.html')
@@ -54,7 +60,7 @@ def login():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
-        user = User.query.filter_by(username=username).first()
+        user = DataBase.User.query.filter_by(username=username).first()
         if user and bcrypt.check_password_hash(user.password, password):
             session['user_id'] = user.id
             flash('Login successful!', 'success')
@@ -77,8 +83,7 @@ def logout():
     return redirect(url_for('login'))
 
 
-
-
 if __name__ == '__main__':
-    CreateTables(app)
+    with app.app_context():
+        Model.Model(app)
     app.run(debug=True, host='127.0.0.1', port=5000)

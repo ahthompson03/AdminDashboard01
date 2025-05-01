@@ -48,7 +48,26 @@ class User(db.Model):
     username = db.Column(db.String(150), unique=True, nullable=False)
     password = db.Column(db.String(150), nullable=False)
 
-def CreateTables(app):
-    with app.app_context():
+def Model(app):
         db.create_all()
 
+
+
+def DashBoardQuery():
+
+    ReviewerCount = db.session.query(Reviewer.ReviewerID).count()
+    PaperCount = db.session.query(Papers.PaperID).count()
+    AuthorCount = db.session.query(Authors.AuthorID).count()
+    PaperWithoutReviewer = db.session.query(Papers).filter(Papers.ReviewerID.is_(None)).count()
+    ReviewerWithoutPaper = db.session.query(db.func.count(Reviewer.ReviewerID)). \
+        outerjoin(Papers, Reviewer.ReviewerID == Papers.ReviewerID). \
+        filter(Papers.PaperID == None). \
+        scalar()
+
+    return {
+    'ReviewerCount': ReviewerCount,
+    'PaperCount': PaperCount,
+    'AuthorCount': AuthorCount,
+    'PaperWithoutReviewer': PaperWithoutReviewer,
+    'ReviewerWithoutPaper': ReviewerWithoutPaper
+    }

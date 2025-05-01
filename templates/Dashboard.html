@@ -97,11 +97,11 @@
     <script>
         // You would typically fetch this data from a server.
         // For this example, we'll hardcode some data.
-        document.getElementById('total-reviewers').textContent = 10;
-        document.getElementById('total-authors').textContent = 25;
-        document.getElementById('total-papers').textContent = 15;
-        document.getElementById('reviewers-without-papers').textContent = 2;
-        document.getElementById('papers-missing-reviewers').textContent = 3;
+        document.getElementById('total-reviewers').textContent = {{ReviewerCount}};
+        document.getElementById('total-authors').textContent = {{AuthorCount}};
+        document.getElementById('total-papers').textContent = {{PaperCount}};
+        document.getElementById('reviewers-without-papers').textContent = {{ReviewerWithoutPaper}};
+        document.getElementById('papers-missing-reviewers').textContent = {{PaperWithoutReviewer}};
 
         const alertsList = document.getElementById('alerts');
         alertsList.innerHTML = ''; // Clear default message
