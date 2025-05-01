@@ -1,7 +1,6 @@
-# main.py
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 from flask_bcrypt import Bcrypt
-from Model import db, User, create_tables  # ✅ Import models and db instance properly
+from Model import db, User, Authors, create_tables
 
 DATABASE_USER = 'abc'
 DATABASE_PASSWD = 'abc123'
@@ -11,23 +10,31 @@ app.config['SQLALCHEMY_DATABASE_URI'] = f'mysql+pymysql://{DATABASE_USER}:{DATAB
 app.config['SECRET_KEY'] = 'your_secret_key'
 
 bcrypt = Bcrypt(app)
-db.init_app(app)  # ✅ Proper initialization of SQLAlchemy
+db.init_app(app)
+
+
+# ROUTES
 
 @app.route('/')
 def Dashboard():
     return render_template('Dashboard.html')
 
+
 @app.route('/reviewers')
 def Reviewer():
     return render_template('Reviewer.html')
 
+
 @app.route('/authors')
 def Author():
-    return render_template('Author.html')
+    authors = Authors.query.all()
+    return render_template('Author.html', authors=authors)
+
 
 @app.route('/papers')
 def Paper():
     return render_template('Papers.html')
+
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -41,6 +48,7 @@ def register():
         flash('Registration successful! You can now log in.', 'success')
         return redirect(url_for('login'))
     return render_template('register.html')
+
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -56,6 +64,7 @@ def login():
             flash('Invalid credentials. Please try again.', 'danger')
     return render_template('login.html')
 
+
 @app.route('/dashboard')
 def dashboard():
     if 'user_id' not in session:
@@ -63,12 +72,27 @@ def dashboard():
         return redirect(url_for('login'))
     return render_template('AdminDashboard.html')
 
+
 @app.route('/logout')
 def logout():
     session.pop('user_id', None)
     flash('You have been logged out.', 'info')
     return redirect(url_for('login'))
 
+
+@app.route('/add_author', methods=['POST'])
+def add_author():
+    first_name = request.form['first_name']
+    last_name = request.form['last_name']
+
+    new_author = Authors(FirstName=first_name, LastName=last_name)
+    db.session.add(new_author)
+    db.session.commit()
+
+    flash('Author added successfully!', 'success')
+    return redirect(url_for('Author'))
+
+
 if __name__ == '__main__':
-    create_tables(app)  # ✅ Tables created within app context
+    create_tables(app)
     app.run(debug=True, host='127.0.0.1', port=5000)

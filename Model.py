@@ -7,12 +7,20 @@ from sqlalchemy.orm import relationship
 db = SQLAlchemy()
 
 # Database Models
+from flask_sqlalchemy import SQLAlchemy
+
+db = SQLAlchemy()
+
+
 class Authors(db.Model):
     __tablename__ = 'AUTHORS'
-    AuthorID = Column(Integer, primary_key=True, autoincrement=True)
-    FirstName = Column(VARCHAR(25), nullable=False)
-    LastName = Column(VARCHAR(25), nullable=False)
-    papers = relationship("Papers", back_populates="author")
+    AuthorID = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    FirstName = db.Column(db.String(25), nullable=False)
+    LastName = db.Column(db.String(25), nullable=False)
+
+    # Make sure Papers model is correctly referencing this relationship
+    papers = db.relationship("Papers", back_populates="author")
+
 
 class Papers(db.Model):
     __tablename__ = 'PAPERS'
