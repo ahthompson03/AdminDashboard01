@@ -42,9 +42,9 @@ def add_paper():
     title = request.form['title']
     first_name = request.form['first_name']
     last_name = request.form['last_name']
-    reviewer_id1 = request.form['reviewer_id1']
-    reviewer_id2 = request.form['reviewer_id2']
-    reviewer_id3 = request.form['reviewer_id3']
+    #reviewer_id1 = request.form['reviewer_id1']
+    #reviewer_id2 = request.form['reviewer_id2']
+    #reviewer_id3 = request.form['reviewer_id3']
 
     author = Model.Authors.query.filter_by(FirstName=first_name, LastName=last_name).first()
 
@@ -55,8 +55,7 @@ def add_paper():
     else:
         author_id = author.AuthorID
 
-    new_paper = Model.Reviewers(Title=title, LastName=last_name,
-                                AuthorID=author.AuthorID)
+    new_paper = Model.Papers(Title=title, AuthorID=author.AuthorID)
                                 #ReviewerID1 = reviewer_id1,
                                 #ReviewerID2 = reviewer_id2,
                                 #ReviewerID3 = reviewer_id3)
