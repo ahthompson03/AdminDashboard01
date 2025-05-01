@@ -73,20 +73,12 @@ def DashBoardAnalytics():
 
     }
 
+"""
 def PaperQuerys():
+
+    #papers = db.session.query(Authors, Papers).join(Papers, Authors.AuthorID == Papers.AuthorID).order_by(Papers.Title).all()
+
     papers = db.session.query(Papers).all()
-    title = []
-    authorName = db.session.query(Authors.FirstName).join(Papers, Authors.AuthorID == Papers.AuthorID).order_by(Papers.Title).all()
-    paperID = []
 
-    for item in papers:
-        title.append(item.Title)
-        paperID.append(item.PaperID)
-
-    #tuple is used to protect the data since it will no longer need changed.
-    return (
-        title,
-        authorName,
-        paperID
-    )
-
+    return papers
+"""

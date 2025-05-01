@@ -33,12 +33,9 @@ def Dashboard():
 
 @app.route('/papers')
 def Paper():
-    queryResults = Model.PaperQuerys()
+    papers = Model.db.session.query(Model.Authors, Model.Papers).join(Model.Papers, Model.Authors.AuthorID == Model.Papers.AuthorID).order_by(Model.Papers.Title).all()
     return render_template('Papers.html',
-                          )
-    # Title = json.dumps(queryResults[0])
-                           #Author = queryResults[1],
-                          # PaperID = queryResults[2])
+                          papers = papers)
 
 
 @app.route('/reviewers')
