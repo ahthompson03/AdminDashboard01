@@ -1,122 +1,77 @@
+<!-- templates/Reviewer.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Reviewers</title>
-     <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
-    <style>
-        body {
-            font-family: 'Inter', sans-serif;
-        }
-         .topnav {
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+     <style>
+        body { font-family: 'Inter', sans-serif; }
+        .topnav {
             background-color: #333;
             overflow: hidden;
         }
-
-        /* Style the links inside the navigation bar */
         .topnav a {
             float: left;
             color: #f2f2f2;
             text-align: center;
             padding: 14px 16px;
             text-decoration: none;
-            font-size: 17px;
         }
-
-        /* Change the color of links on hover */
-        .topnav a:hover {
-            background-color: #ddd;
-            color: black;
-        }
-
-        /* Add a color to the active/current link */
-        .topnav a.Dashboard {
-            background-color: #04AA6D;
-            color: white;
-        }
-                /* Add a color to the active/current link */
-        .topnav a.Logout {
-            color: #f2f2f2;
-            text-align: center;
-            padding: 14px 40px;
-            font-size: 17px;
-            color: white;
-            float: right;
-        }
-
-
+        .topnav a:hover { background-color: #ddd; color: black; }
+        .topnav a.Dashboard { background-color: #04AA6D; color: white; }
+        .topnav a.Logout { float: right; color: white; padding: 14px 40px; }
     </style>
 </head>
 <body class="bg-gray-100 p-6">
-
     <div class="topnav">
-        <a class = "Logout" href="logout">Username</a>
+        <a class="Logout" href="/logout">Logout</a>
         <a class="Dashboard" href="dash">Dashboard</a>
-        <a href="papers">Papers</a>
-        <a href="reviewers">Reviewers</a>
-        <a href="authors">Authors</a>
-
+        <a href="/papers">Papers</a>
+        <a href="/reviewers">Reviewers</a>
+        <a href="/authors">Authors</a>
     </div>
+<div class="bg-gray-100 text-gray-900">
+    <div class="container mx-auto px-4 py-6">
+        <h1 class="text-2xl font-bold mb-4">Reviewer List</h1>
 
-    <br></br>
-    <h1 class="text-2xl font-semibold text-gray-800 mb-8">Reviewers</h1>
+        <!-- Add Reviewer Form -->
+        <form action="{{ url_for('add_reviewer') }}" method="POST" class="mb-6 flex space-x-2">
+            <input type="text" name="first_name" placeholder="First Name" required class="p-2 border border-gray-300 rounded">
+            <input type="text" name="last_name" placeholder="Last Name" required class="p-2 border border-gray-300 rounded">
+            <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">Add Reviewer</button>
+        </form>
 
-    <div class="bg-white rounded-lg shadow-md p-6 mb-8">
-        <h2 class="text-lg font-semibold text-gray-700 mb-4">Reviewer Actions</h2>
-        <div class="space-y-4">
-            <button id="add-drop-reviewer" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">Add/Drop Reviewer from DB</button>
-            <button id="lookup-reviewer-details" class="bg-yellow-500 hover:bg-yellow-700 text-gray-900 font-bold py-2 px-4 rounded">Look Up Specific Reviewer and Details</button>
-        </div>
+        <!-- Delete Reviewer Form -->
+        <form action="{{ url_for('delete_reviewer') }}" method="POST" class="mb-6 flex space-x-2">
+            <input type="number" name="reviewer_id" placeholder="Enter Reviewer ID to Delete" required class="p-2 border border-red-300 rounded">
+            <button type="submit" class="bg-red-500 text-white px-4 py-2 rounded">Delete Reviewer</button>
+        </form>
+
+        <!-- Reviewer Table -->
+        <table class="min-w-full bg-white border border-gray-300">
+            <thead>
+                <tr>
+                    <th class="py-2 px-4 border-b">Reviewer ID</th>
+                    <th class="py-2 px-4 border-b">First Name</th>
+                    <th class="py-2 px-4 border-b">Last Name</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for reviewer in reviewers %}
+                <tr>
+                    <td class="py-2 px-4 border-b">{{ reviewer.ReviewerID }}</td>
+                    <td class="py-2 px-4 border-b">{{ reviewer.FirstName }}</td>
+                    <td class="py-2 px-4 border-b">{{ reviewer.LastName }}</td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="3" class="py-2 px-4 text-center">No reviewers found.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
     </div>
-
-     <div class="bg-white rounded-lg shadow-md p-6">
-        <h2 class="text-lg font-semibold text-gray-700 mb-4">Reviewer List</h2>
-        <ul id="reviewer-list" class="list-disc list-inside space-y-2">
-            <li>Reviewer data will be displayed here.</li>
-        </ul>
-    </div>
-
-    <script>
-        // In a real application, these button actions would trigger API calls.
-        document.getElementById('add-drop-reviewer').addEventListener('click', () => {
-            const action = prompt('Add or Drop? (add/drop):');
-            if (action === 'add') {
-                alert('Adding reviewer...');
-                //  Add logic to send request to server to add reviewer.
-            } else if (action === 'drop') {
-                alert('Dropping reviewer...');
-                 // Add logic to send request to server to drop reviewer.
-            } else {
-                alert('Invalid action.');
-            }
-        });
-
-        document.getElementById('lookup-reviewer-details').addEventListener('click', () => {
-            const reviewerId = prompt('Enter Reviewer ID:');
-            if (reviewerId) {
-                alert(`Looking up details for Reviewer ID: ${reviewerId}`);
-                // Add logic to fetch and display reviewer details
-            } else {
-                alert('No Reviewer ID entered.');
-            }
-        });
-
-         // Populate the reviewer list (for demonstration)
-        const reviewerList = document.getElementById('reviewer-list');
-        const reviewers = [
-            { id: 101, name: "Alice Johnson", expertise: "Machine Learning" },
-            { id: 102, name: "Bob Williams", expertise: "Data Mining" },
-            { id: 103, name: "Mary Brown", expertise: "Natural Language Processing" }
-        ];
-
-        reviewerList.innerHTML = '';  // Clear initial message
-        reviewers.forEach(reviewer => {
-            const li = document.createElement('li');
-            li.textContent = `${reviewer.name} (ID: ${reviewer.id}), Expertise: ${reviewer.expertise}`;
-            reviewerList.appendChild(li);
-        });
-    </script>
+</div>
 </body>
 </html>

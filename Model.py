@@ -26,15 +26,16 @@ class Papers(db.Model):
     ReviewerID = Column(Integer, ForeignKey('REVIEWERS.ReviewerID'), nullable=True)
 
     author = relationship("Authors", back_populates="papers")
-    reviewer = relationship("Reviewer", back_populates="papers")
+    reviewer = relationship("Reviewers", back_populates="papers")  # update to match new class name
     track = relationship("Track", back_populates="paper")
 
-class Reviewer(db.Model):
+class Reviewers(db.Model):  # renamed from Reviewer
     __tablename__ = 'REVIEWERS'
     ReviewerID = Column(Integer, primary_key=True, autoincrement=True)
     FirstName = Column(VARCHAR(25), nullable=False)
     LastName = Column(VARCHAR(25), nullable=False)
     papers = relationship("Papers", back_populates="reviewer")
+
 
 class Track(db.Model):
     __tablename__ = 'TRACKS'
@@ -55,12 +56,12 @@ def Model(app):
 
 def DashBoardAnalytics():
 
-    ReviewerCount = db.session.query(Reviewer.ReviewerID).count()
+    ReviewerCount = db.session.query(Reviewers.ReviewerID).count()
     PaperCount = db.session.query(Papers.PaperID).count()
     AuthorCount = db.session.query(Authors.AuthorID).count()
     PaperWithoutReviewer = db.session.query(Papers).filter(Papers.ReviewerID.is_(None)).count()
-    ReviewerWithoutPaper = db.session.query(db.func.count(Reviewer.ReviewerID)). \
-        outerjoin(Papers, Reviewer.ReviewerID == Papers.ReviewerID). \
+    ReviewerWithoutPaper = db.session.query(db.func.count(Reviewers.ReviewerID)). \
+        outerjoin(Papers, Reviewers.ReviewerID == Papers.ReviewerID). \
         filter(Papers.PaperID == None). \
         scalar()
 
