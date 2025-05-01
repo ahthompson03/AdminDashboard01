@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Papers</title>
-     <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
     <style>
         body {
@@ -32,7 +32,7 @@
         }
 
         /* Add a color to the active/current link */
-        .topnav a.Dashboard {
+        .topnav a.Papers {
             background-color: #04AA6D;
             color: white;
         }
@@ -46,6 +46,13 @@
             float: right;
         }
 
+        .container {
+            max-width: 960px; /* Adjust as needed to match the other page */
+            margin-left: auto;
+            margin-right: auto;
+            padding-left: 1rem;
+            padding-right: 1rem;
+        }
 
     </style>
 </head>
@@ -54,47 +61,62 @@
     <div class="topnav">
         <a class = "Logout" href="logout">Username</a>
         <a class="Dashboard" href="dash">Dashboard</a>
-        <a href="papers">Papers</a>
+        <a class="Papers" href="papers">Papers</a>
         <a href="reviewers">Reviewers</a>
         <a href="authors">Authors</a>
-
     </div>
 
-    <br></br>
-    <h1 class="text-2xl font-semibold text-gray-800 mb-8">Papers</h1>
+    <div class="container">
+        <br>
+        <h1 class="text-2xl font-semibold text-gray-800 mb-8">Papers</h1>
 
-    <div class="bg-white rounded-lg shadow-md p-6 mb-8">
-        <h2 class="text-lg font-semibold text-gray-700 mb-4">Paper Actions</h2>
-        <div class="space-y-4">
-            <button id="auto-assign-reviewers" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Auto Assign Reviewers</button>
-            <button id="add-drop-assignment" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">Add/Drop Custom Assignment</button>
-            <button id="lookup-paper-details" class="bg-yellow-500 hover:bg-yellow-700 text-gray-900 font-bold py-2 px-4 rounded">Look Up Specific Paper Details</button>
+        <div class="space-y-4 mb-6">
+        <div class="flex flex-col items-start  gap-2 ">
+            <span class="font-semibold  mr-2 ">Auto Assign Reviewer:</span>
+            <div class="flex flex-wrap items-center gap-2">
+            <form action="{{ url_for('add_reviewer') }}" method="POST" id="assign-form">
+                <button type="submit" class="bg-yellow-600 text-white px-10 py-2 rounded hover:bg-yellow-700">Assign</button>
+            </form>
+            </div>
         </div>
-    </div>
 
-    <div>
-    <h1 class="text-2xl font-semibold text-gray-800 mb-4">Add a New Paper</h1>
-        <form action="/add_author" method="POST" class="bg-white p-6 rounded shadow-md space-y-4">
-            <input type="text" name="title" placeholder="Paper Title" required class="p-2 border border-gray-300 rounded"/>
-            <input type="text" name="first_name" placeholder="Author's First Name" required class="p-2 border border-gray-300 rounded"/>
-            <input type="text" name="last_name" placeholder="Author's Last Name" required class="p-2 border border-gray-300 rounded"/>
-            <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">Add Author</button>
-            <br></br>
-            <input type="text" name="reviewer1" placeholder="Reviewer 1" required class="p-2 border border-gray-300 rounded"/>
-            <input type="text" name="reviwer2" placeholder="Reviewer 2" required class="p-2 border border-gray-300 rounded"/>
-            <input type="text" name="reviwer3" placeholder="Reviewer 3" required class="p-2 border border-gray-300 rounded"/>
-        </form>
-    </div>
+        <div class="space-y-4 mb-6">
+            <div class="flex flex-col items-start  gap-2 ">
+                <span class="font-semibold  mr-2 ">Add Paper:</span>
+                <div class="flex flex-wrap items-center gap-2">
+                <input type="text" name="first_name" form="add-form" placeholder="Paper Title" required class="p-2 border border-gray-300 rounded w-40">
+                <input type="text" name="last_name" form="add-form" placeholder="Author First Name" required class="p-2 border border-gray-300 rounded w-40">
+                <input type="text" name="last_name" form="add-form" placeholder="Author Last Name" required class="p-2 border border-gray-300 rounded w-40">
+                <input type="number" name="author_id" placeholder="ReviewerID 1" required min="1" class="p-2 border border-gray-300 rounded w-40"/>
+                <input type="number" name="author_id" placeholder="ReviewerID 2" required min="1" class="p-2 border border-gray-300 rounded w-40"/>
+                <input type="number" name="author_id" placeholder="ReviewerID 3" required min="1" class="p-2 border border-gray-300 rounded w-40"/>
+                <form action="{{ url_for('add_reviewer') }}" method="POST" id="add-form">
+                    <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Add</button>
+                </form>
+                </div>
+            </div>
 
-    <div>
-        <h2 class="text-xl font-semibold text-gray-700 mt-10 mb-2">Current Papers</h2>
-        <ul class="bg-white p-4 rounded shadow space-y-2">
-            {% for paper in papers %}
-                <li class="border-b py-2">{{ paper.Papers.Title }} {{ paper.Authors.FirstName }} {{ paper.Authors.LastName }} (ID: {{ paper.Papers.PaperID }})</li>
-            {% else %}
-                <li>No authors found.</li>
-            {% endfor %}
-        </ul>
+            <div class="flex flex-col items-start  gap-2 ">
+                <span class="font-semibold  mr-2 ">Delete Paper by ID:</span>
+                <div class="flex flex-wrap items-center gap-2">
+                <input type="number" name="paper_id" form="delete-form" placeholder="PaperID" required class="p-2 border border-gray-300 rounded w-32">
+                <form action="{{ url_for('delete_reviewer') }}" method="POST" id="delete-form">
+                    <button type="submit" class="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700">Delete</button>
+                </form>
+                </div>
+            </div>
+        </div>
+
+        <div>
+            <h2 class="text-xl font-semibold text-gray-700 mt-10 mb-2">Current Papers</h2>
+            <ul class="bg-white p-4 rounded shadow space-y-2">
+                {% for paper in papers %}
+                    <li class="border-b py-2">{{ paper.Papers.Title }} {{ paper.Authors.FirstName }} {{ paper.Authors.LastName }} (ID: {{ paper.Papers.PaperID }})</li>
+                {% else %}
+                    <li>No authors found.</li>
+                {% endfor %}
+            </ul>
+        </div>
     </div>
 
 </body>
