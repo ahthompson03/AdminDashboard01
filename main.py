@@ -35,7 +35,8 @@ def Dashboard():
 def Paper():
     queryResults = Model.PaperQuerys()
     return render_template('Papers.html',
-                           Title = json.dumps(queryResults[0]))
+                          )
+    # Title = json.dumps(queryResults[0])
                            #Author = queryResults[1],
                           # PaperID = queryResults[2])
 
@@ -47,7 +48,7 @@ def Reviewer():
 
 @app.route('/authors')
 def Author():
-    authors = Authors.query.all()
+    authors = Model.Authors.query.all()
     return render_template('Author.html', authors=authors)
 
 
@@ -103,9 +104,9 @@ def add_author():
     first_name = request.form['first_name']
     last_name = request.form['last_name']
 
-    new_author = Authors(FirstName=first_name, LastName=last_name)
-    db.session.add(new_author)
-    db.session.commit()
+    new_author = Model.Authors(FirstName=first_name, LastName=last_name)
+    Model.db.session.add(new_author)
+    Model.db.session.commit()
 
     flash('Author added successfully!', 'success')
     return redirect(url_for('Author'))
