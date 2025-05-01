@@ -55,15 +55,21 @@ def add_paper():
     else:
         author_id = author.AuthorID
 
-    new_paper = Model.Papers(Title=title, AuthorID=author.AuthorID)
-                                #ReviewerID1 = reviewer_id1,
-                                #ReviewerID2 = reviewer_id2,
-                                #ReviewerID3 = reviewer_id3)
-    Model.db.session.add(new_paper)
-    Model.db.session.commit()
-    print(Model.Papers.query.filter_by(Title=title).first())
-    flash('Paper added successfully!', 'success')
-    return redirect(url_for('Papers'))
+    new_paper = Model.Papers.query.filter_by(Title=title).first()
+
+    if not new_paper:
+        new_paper = Model.Papers(Title=title, AuthorID=author.AuthorID)
+                                    #ReviewerID1 = reviewer_id1,
+                                    #ReviewerID2 = reviewer_id2,
+                                    #ReviewerID3 = reviewer_id3)
+        Model.db.session.add(new_paper)
+        Model.db.session.commit()
+        print(Model.Papers.query.filter_by(Title=title).first())
+        flash('Paper added successfully!', 'success')
+        return redirect(url_for('Paper'))
+    else:
+        flash('Paper Already Exists!', 'success')
+        return redirect(url_for('Paper'))
 
 
 
