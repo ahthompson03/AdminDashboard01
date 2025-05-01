@@ -84,13 +84,13 @@
             <div class="flex flex-col items-start  gap-2 ">
                 <span class="font-semibold  mr-2 ">Add Paper:</span>
                 <div class="flex flex-wrap items-center gap-2">
-                <input type="text" name="first_name" form="add-form" placeholder="Paper Title" required class="p-2 border border-gray-300 rounded w-40">
-                <input type="text" name="last_name" form="add-form" placeholder="Author First Name" required class="p-2 border border-gray-300 rounded w-40">
+                <input type="text" name="title" form="add-form" placeholder="Paper Title" required class="p-2 border border-gray-300 rounded w-40">
+                <input type="text" name="first_name" form="add-form" placeholder="Author First Name" required class="p-2 border border-gray-300 rounded w-40">
                 <input type="text" name="last_name" form="add-form" placeholder="Author Last Name" required class="p-2 border border-gray-300 rounded w-40">
-                <input type="number" name="author_id" placeholder="ReviewerID 1" required min="1" class="p-2 border border-gray-300 rounded w-40"/>
-                <input type="number" name="author_id" placeholder="ReviewerID 2" required min="1" class="p-2 border border-gray-300 rounded w-40"/>
-                <input type="number" name="author_id" placeholder="ReviewerID 3" required min="1" class="p-2 border border-gray-300 rounded w-40"/>
-                <form action="{{ url_for('add_reviewer') }}" method="POST" id="add-form">
+                <input type="number" name="reviewer_id1" placeholder="ReviewerID 1" required min="1" class="p-2 border border-gray-300 rounded w-40"/>
+                <input type="number" name="reviewer_id2" placeholder="ReviewerID 2" required min="1" class="p-2 border border-gray-300 rounded w-40"/>
+                <input type="number" name="reviewer_id3" placeholder="ReviewerID 3" required min="1" class="p-2 border border-gray-300 rounded w-40"/>
+                <form action="{{ url_for('add_paper') }}" method="POST" id="add-form">
                     <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Add</button>
                 </form>
                 </div>

@@ -37,6 +37,36 @@ def Paper():
     return render_template('Papers.html',
                           papers = papers)
 
+@app.route('/add_paper', methods=['POST'])
+def add_paper():
+    title = request.form['title']
+    first_name = request.form['first_name']
+    last_name = request.form['last_name']
+    reviewer_id1 = request.form['reviewer_id1']
+    reviewer_id2 = request.form['reviewer_id2']
+    reviewer_id3 = request.form['reviewer_id3']
+
+    author = Model.Authors.query.filter_by(FirstName=first_name, LastName=last_name).first()
+
+    if not author:
+        author = Model.Authors(FirstName=first_name, LastName=last_name)
+        Model.db.session.add(author)
+        Model.db.session.commit()
+    else:
+        author_id = author.AuthorID
+
+    new_paper = Model.Reviewers(Title=title, LastName=last_name,
+                                AuthorID=author.AuthorID)
+                                #ReviewerID1 = reviewer_id1,
+                                #ReviewerID2 = reviewer_id2,
+                                #ReviewerID3 = reviewer_id3)
+    Model.db.session.add(new_paper)
+    Model.db.session.commit()
+    print(Model.Papers.query.filter_by(Title=title).first())
+    flash('Paper added successfully!', 'success')
+    return redirect(url_for('Papers'))
+
+
 
 @app.route('/reviewers')
 def Reviewer():
