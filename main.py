@@ -43,17 +43,37 @@ def Paper():
 
 @app.route('/reviewers')
 def Reviewer():
-    return render_template('Reviewer.html')
+    reviewers = Model.Reviewers.query.all()
+    return render_template('Reviewer.html', reviewers=reviewers)
+
+
+@app.route('/add_reviewer', methods=['POST'])
+def add_reviewer():
+    first_name = request.form['first_name']
+    last_name = request.form['last_name']
+    new_reviewer = Model.Reviewers(FirstName=first_name, LastName=last_name)
+    Model.db.session.add(new_reviewer)
+    Model.db.session.commit()
+    flash('Reviewer added successfully!', 'success')
+    return redirect(url_for('Reviewer'))
+
+@app.route('/delete_reviewer', methods=['POST'])
+def delete_reviewer():
+    reviewer_id = request.form['reviewer_id']
+    reviewer = Model.Reviewers.query.get(reviewer_id)
+
+    # Optional: Remove paper associations first
+    Model.Papers.query.filter_by(ReviewerID=reviewer_id).update({Model.Papers.ReviewerID: None})
+
+    Model.db.session.delete(reviewer)
+    Model.db.session.commit()
+    return redirect('/reviewers')
 
 
 @app.route('/authors')
 def Author():
     authors = Model.Authors.query.all()
     return render_template('Author.html', authors=authors)
-
-
-
-
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -111,8 +131,24 @@ def add_author():
     flash('Author added successfully!', 'success')
     return redirect(url_for('Author'))
 
+@app.route('/delete_author', methods=['POST'])
+def delete_author():
+    author_id = request.form['author_id']
+    author = Model.Authors.query.get(author_id)
+
+    # First delete all papers linked to this author
+    Model.Papers.query.filter_by(AuthorID=author_id).delete()
+
+    # Then delete the author
+    Model.db.session.delete(author)
+    Model.db.session.commit()
+    return redirect('/authors')
+
+
 
 if __name__ == '__main__':
     with app.app_context():
         Model.Model(app)
     app.run(debug=True, host='127.0.0.1', port=5000)
+
+
