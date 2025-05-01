@@ -33,7 +33,7 @@
     </div>
 <div class="bg-gray-100 text-gray-900">
     <div class="container mx-auto px-4 py-6">
-        <h1 class="text-2xl font-bold mb-4">Reviewer List</h1>
+
 
         <!-- Add Reviewer Form -->
  <div class="flex flex-wrap items-center gap-4 mb-6">
@@ -47,13 +47,13 @@
 
     <!-- Delete Reviewer -->
     <span class="font-semibold ml-8 mr-2">Delete Reviewer by ID:</span>
-    <input type="number" name="reviewer_id" form="delete-form" placeholder="ID" required class="p-2 border border-gray-300 rounded w-32">
+    <input type="number" name="reviewer_id" form="delete-form" placeholder="ID" required min="1" class="p-2 border border-gray-300 rounded w-32">
     <form action="{{ url_for('delete_reviewer') }}" method="POST" id="delete-form">
         <button type="submit" class="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700">Delete</button>
     </form>
 </div>
 
-
+<h1 class="text-2xl font-bold mb-4">Reviewer List</h1>
         <!-- Reviewer Table -->
         <table class="min-w-full bg-white border border-gray-300">
             <thead>

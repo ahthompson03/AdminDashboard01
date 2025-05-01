@@ -44,7 +44,7 @@
 
             <!-- Delete Author -->
             <span class="font-semibold ml-8 mr-2">Delete Author by ID:</span>
-            <input type="number" name="author_id" form="delete-author-form" placeholder="Author ID" required class="p-2 border border-gray-300 rounded w-32">
+            <input type="number" name="author_id" form="delete-author-form" placeholder="Author ID" required min="1" class="p-2 border border-gray-300 rounded w-32">
             <form action="/delete_author" method="POST" id="delete-author-form">
                 <button type="submit" class="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700">Delete</button>
             </form>
