@@ -74,7 +74,7 @@ def add_paper():
 @app.route('/delete_paper', methods=['POST'])
 def delete_paper():
     paper_id = request.form['paper_id']
-    paper = Model.Reviewers.query.get(paper_id)
+    paper = Model.Papers.query.get(paper_id)
 
     if not paper:
         flash(f"No Paper found with ID: {paper_id}.", "warning")
@@ -85,7 +85,7 @@ def delete_paper():
 
     Model.db.session.delete(paper)
     Model.db.session.commit()
-    return redirect('/paper')
+    return redirect(url_for('Paper'))
 
 
 @app.route('/reviewers')
