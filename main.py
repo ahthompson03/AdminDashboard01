@@ -68,9 +68,24 @@ def add_paper():
         flash('Paper added successfully!', 'success')
         return redirect(url_for('Paper'))
     else:
-        flash('Paper Already Exists!', 'success')
+        flash('Paper Already Exists!', 'warning')
         return redirect(url_for('Paper'))
 
+@app.route('/delete_paper', methods=['POST'])
+def delete_paper():
+    paper_id = request.form['paper_id']
+    paper = Model.Reviewers.query.get(paper_id)
+
+    if not paper:
+        flash(f"No Paper found with ID: {paper_id}.", "warning")
+        return redirect(url_for('Paper'))
+
+    # Optional: Remove paper associations first
+    #Model.Papers.query.filter_by(ReviewerID=reviewer_id).update({Model.Papers.ReviewerID: None})
+
+    Model.db.session.delete(paper)
+    Model.db.session.commit()
+    return redirect('/paper')
 
 
 @app.route('/reviewers')
