@@ -2,7 +2,7 @@ from flask import Flask, render_template, request, redirect, url_for, session, f
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 import Model as Model
-
+#g
 DATABASE_USER = 'abc'
 DATABASE_PASSWD = 'abc123'
 

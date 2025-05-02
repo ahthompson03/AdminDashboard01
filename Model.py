@@ -22,7 +22,10 @@ class Papers(db.Model):
     PaperID = Column(Integer, primary_key=True, autoincrement=True)
     Title = Column(VARCHAR(200), unique=True, nullable=False)
     AuthorID = Column(Integer, ForeignKey('AUTHORS.AuthorID'), nullable=False)
-    ReviewerID = Column(Integer, ForeignKey('REVIEWERS.ReviewerID'), nullable=True)
+    ReviewerID1 = Column(Integer, ForeignKey('REVIEWERS.ReviewerID'), nullable=True)
+    ReviewerID2 = Column(Integer, ForeignKey('REVIEWERS.ReviewerID'), nullable=True)
+    ReviewerID3 = Column(Integer, ForeignKey('REVIEWERS.ReviewerID'), nullable=True)
+
 
     author = relationship("Authors", back_populates="papers")
     reviewer = relationship("Reviewers", back_populates="papers")  # update to match new class name
