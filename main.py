@@ -33,7 +33,7 @@ def Dashboard():
 
 @app.route('/papers')
 def Paper():
-    papers = Model.db.session.query(Model.Authors, Model.Papers).join(Model.Papers, Model.Authors.AuthorID == Model.Papers.AuthorID).order_by(Model.Papers.Title).all()
+    papers = Model.db.session.query(Model.Authors, Model.Papers).join(Model.Papers, Model.Authors.AuthorID == Model.Papers.AuthorID).order_by(Model.Papers.PaperID).all()
     return render_template('Papers.html',
                           papers = papers)
 

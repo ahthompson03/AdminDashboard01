@@ -111,7 +111,7 @@
             <h2 class="text-xl font-semibold text-gray-700 mt-10 mb-2">Current Papers</h2>
             <ul class="bg-white p-4 rounded shadow space-y-2">
                 {% for paper in papers %}
-                    <li class="border-b py-2">{{ paper.Papers.Title }} {{ paper.Authors.FirstName }} {{ paper.Authors.LastName }} (ID: {{ paper.Papers.PaperID }})</li>
+                    <li class="border-b py-2"> {{ paper.Papers.Title }}, {{ paper.Authors.FirstName }} {{ paper.Authors.LastName }} (ID: {{ paper.Papers.PaperID }})</li>
                 {% else %}
                     <li>No authors found.</li>
                 {% endfor %}
