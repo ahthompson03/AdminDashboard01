@@ -33,7 +33,9 @@ class Reviewers(db.Model):  # renamed from Reviewer
     ReviewerID = Column(Integer, primary_key=True, autoincrement=True)
     FirstName = Column(VARCHAR(25), nullable=False)
     LastName = Column(VARCHAR(25), nullable=False)
+    ReviewerEmail = Column(VARCHAR(25), nullable=True)
     papers = relationship("Papers", back_populates="reviewer")
+
 
 
 class Track(db.Model):
@@ -50,6 +52,7 @@ class User(db.Model):
 
 def Model(app):
         db.create_all()
+
 
 
 
@@ -74,11 +77,19 @@ def DashBoardAnalytics():
     }
 
 """
-def PaperQuerys():
+Least amount of papers
+By ID
+Until every paper has 3 reviewers
+Check for duplicate Reviewers
 
-    #papers = db.session.query(Authors, Papers).join(Papers, Authors.AuthorID == Papers.AuthorID).order_by(Papers.Title).all()
+Give every reviewer 1 paper, then 2 papers, then 3 or until papers run out
 
-    papers = db.session.query(Papers).all()
 
-    return papers
+Go through papers and make a list of all papers that don't have 3 reviewers
+Second list (ReviewerIDList) of all reviewer ID's that show up in the papers
+Dictionary with key of ReviewerID and Value of amount of times it shows up in Reviewer list
+Find lowest integer in the list and assign it to the paper with the lowest amount of reviewers 
+
+
+
 """
