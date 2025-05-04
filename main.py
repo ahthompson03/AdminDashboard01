@@ -62,7 +62,7 @@ def logout():
 
 
 """Dashboard: Viewer/Controller Consists of only one page named dashboard_viewer_controller"""
-@app.route('/dash')
+@app.route('/dashboard')
 def dashboard_viewer_controller():
     queryResults = Model.DashBoardAnalytics()
     return render_template('Dashboard.html',
