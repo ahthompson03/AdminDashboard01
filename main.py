@@ -9,14 +9,15 @@ DATABASE_PASSWD = 'abc123'
 
 #initialize App
 app = Flask(__name__)
-#initialize bcrypt
-bcrypt = Bcrypt(app)
-#create reference to database and initialize
-Model.db.init_app(app)
 
 #DataBase and app Config
 app.config['SQLALCHEMY_DATABASE_URI'] = f'mysql+pymysql://{DATABASE_USER}:{DATABASE_PASSWD}@localhost/AdminDashboard'
 app.config['SECRET_KEY'] = 'your_secret_key'
+
+#initialize bcrypt
+bcrypt = Bcrypt(app)
+#create reference to database and initialize
+Model.db.init_app(app)
 
 #username = 'test@jack.com'
 
