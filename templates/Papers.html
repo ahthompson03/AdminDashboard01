@@ -75,7 +75,7 @@
         <div class="flex flex-col items-start  gap-2 ">
             <span class="font-semibold  mr-2 ">Auto Assign Reviewer:</span>
             <div class="flex flex-wrap items-center gap-2">
-            <form action="{{ url_for('add_reviewer') }}" method="POST" id="assign-form">
+            <form action="{{ url_for('auto_assign') }}" method="POST" id="assign-form">
                 <button type="submit" class="bg-yellow-600 text-white px-10 py-2 rounded hover:bg-yellow-700">Assign</button>
             </form>
             </div>

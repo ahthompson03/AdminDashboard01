@@ -42,9 +42,6 @@ def add_paper():
     title = request.form['title']
     first_name = request.form['first_name']
     last_name = request.form['last_name']
-    #reviewer_id1 = request.form['reviewer_id1']
-    #reviewer_id2 = request.form['reviewer_id2']
-    #reviewer_id3 = request.form['reviewer_id3']
 
     author = Model.Authors.query.filter_by(FirstName=first_name, LastName=last_name).first()
 
@@ -85,6 +82,11 @@ def delete_paper():
 
     Model.db.session.delete(paper)
     Model.db.session.commit()
+    return redirect(url_for('Paper'))
+
+@app.route('/auto_assign', methods=['POST'])
+def auto_assign():
+    Model.Assign_Reviewers()
     return redirect(url_for('Paper'))
 
 
