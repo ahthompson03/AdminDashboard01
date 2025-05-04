@@ -35,6 +35,11 @@ class Reviewers(db.Model):
     ReviewerEmail = Column(VARCHAR(125), nullable=True)
     papers = relationship("Papers", secondary=PaperReviewers.__table__, back_populates="reviewers")
 
+class User(db.Model):
+    id = Column(Integer, primary_key=True)
+    username = Column(String(150), unique=True, nullable=False)
+    password = Column(String(150), nullable=False)
+
 
 
 def Model(app):
