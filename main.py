@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 from flask_bcrypt import Bcrypt
 import Model as Model
+from Model import Papers, Authors
 
 #database global variables
 DATABASE_USER = 'abc'
@@ -180,12 +181,13 @@ def add_reviewer():
 def delete_reviewer():
     reviewer_id = request.form['reviewer_id']
     try:
+        paper_reviewers = Model.db.session.query(Model.PaperReviewers).join(Model.Papers, Model.PaperReviewers.PaperID == Model.Papers.PaperID).filter(Model.Papers.PaperID == reviewer_id).all()
         reviewer = Model.db.session.query(Model.Reviewers).filter(Model.Reviewers.ReviewerID == reviewer_id).first()
         if not reviewer:
             flash(f"No Reviewer found with ID: {reviewer_id}.", "warning")
             return redirect(url_for('reviewer_viewer_controller'))
-        #Remove paper associations first
-        Model.Papers.query.filter_by(ReviewerID=reviewer_id).update({Model.Papers.ReviewerID: None})
+        for paperreviewer in paper_reviewers:
+            Model.db.session.delete(paperreviewer)
         #Then delete the reviewer
         Model.db.session.delete(reviewer)
         Model.db.session.commit()
@@ -224,13 +226,16 @@ def add_author():
 def delete_author():
     author_id = request.form['author_id']
     try:
-        author = Model.Authors.query.get(author_id)
+        papers = Model.db.session.query((Model.Papers)).filter(Model.Papers.AuthorID == author_id).all()
+        paper_reviewers = Model.db.session.query(Model.PaperReviewers).join(Model.Papers, Model.PaperReviewers.PaperID == Model.Papers.PaperID).filter(Model.Papers.AuthorID == author_id).all()
+        author = Model.db.session.query(Model.Authors).filter(Model.Authors.AuthorID == author_id).first()
         if not author:
             flash(f"No author found with ID: {author_id}.", "warning")
             return redirect(url_for('author_viewer_controller'))
-        # First delete all papers linked to this author
-        Model.Papers.query.filter_by(AuthorID=author_id).delete()
-        # Then delete the author
+        for paperreviewer in paper_reviewers:
+            Model.db.session.delete(paperreviewer)
+        for paper in papers:
+            Model.db.session.delete(paper)
         Model.db.session.delete(author)
         Model.db.session.commit()
         return redirect('/authors')
