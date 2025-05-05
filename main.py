@@ -1,8 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for, session, flash
-from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 import Model as Model
-from Model import Papers
 
 #database global variables
 DATABASE_USER = 'abc'
@@ -73,13 +71,13 @@ def logout():
 """Dashboard: Viewer/Controller Consists of only one page named dashboard_viewer_controller"""
 @app.route('/dashboard')
 def dashboard_viewer_controller():
-    queryResults = Model.DashBoardAnalytics()
+    query_results = Model.DashBoardAnalytics()
     return render_template('Dashboard.html',
-                           ReviewerCount = queryResults['ReviewerCount'],
-                           PaperCount = queryResults['PaperCount'],
-                           AuthorCount = queryResults['AuthorCount'],
-                           PaperWithoutReviewer = queryResults['PaperWithoutReviewer'],
-                           ReviewerWithoutPaper = queryResults['ReviewerWithoutPaper'])
+                           ReviewerCount = query_results['ReviewerCount'],
+                           PaperCount = query_results['PaperCount'],
+                           AuthorCount = query_results['AuthorCount'],
+                           PaperWithoutReviewer = query_results['PaperWithoutReviewer'],
+                           ReviewerWithoutPaper = query_results['ReviewerWithoutPaper'])
 
 
 
