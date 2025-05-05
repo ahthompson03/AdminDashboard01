@@ -100,7 +100,7 @@
             <div class="flex flex-col items-start  gap-2 ">
                 <span class="font-semibold  mr-2 ">Delete Paper by ID:</span>
                 <div class="flex flex-wrap items-center gap-2">
-                <input type="number" name="paper_id" form="delete-form" placeholder="PaperID" required class="p-2 border border-gray-300 rounded w-32">
+                <input type="number" name="paper_id" form="delete-form" placeholder="PaperID" required min="1" class="p-2 border border-gray-300 rounded w-32">
                 <form action="{{ url_for('delete_paper') }}" method="POST" id="delete-form">
                     <button type="submit" class="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700">Delete</button>
                 </form>

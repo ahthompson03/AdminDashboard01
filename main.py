@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, redirect, url_for, session, f
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 import Model as Model
+from Model import Papers
 
 #database global variables
 DATABASE_USER = 'abc'
@@ -128,16 +129,21 @@ def add_paper():
 def delete_paper():
     paper_id = request.form['paper_id']
     try:
-        paper = Model.Papers.query.get(paper_id)
+        paper_reviewers = Model.db.session.query(Model.PaperReviewers).join(Model.Papers, Model.PaperReviewers.PaperID == Model.Papers.PaperID).filter(Model.Papers.PaperID == paper_id).all()
+        paper = Model.db.session.query(Model.Papers).filter(Model.Papers.PaperID == paper_id).first()
         if not paper:
             flash(f"No Paper found with ID: {paper_id}.", "warning")
+            print('paper not found')
             return redirect(url_for('paper_viewer_controller'))
+        for paperreviewer in paper_reviewers:
+            Model.db.session.delete(paperreviewer)
         Model.db.session.delete(paper)
         Model.db.session.commit()
         return redirect(url_for('paper_viewer_controller'))
     except Exception:
         print('Error in deleting paper')
         return redirect(url_for('paper_viewer_controller'))
+
 
 @app.route('/auto_assign', methods=['POST'])
 def auto_assign():
@@ -176,7 +182,7 @@ def add_reviewer():
 def delete_reviewer():
     reviewer_id = request.form['reviewer_id']
     try:
-        reviewer = Model.Reviewers.query.get(reviewer_id)
+        reviewer = Model.db.session.query(Model.Reviewers).filter(Model.Reviewers.ReviewerID == reviewer_id).first()
         if not reviewer:
             flash(f"No Reviewer found with ID: {reviewer_id}.", "warning")
             return redirect(url_for('reviewer_viewer_controller'))

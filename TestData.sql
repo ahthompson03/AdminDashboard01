@@ -61,29 +61,6 @@ INSERT INTO PAPERS (PaperID, Title, AuthorID) VALUES
     (19, 'Robotics and Automation', 3),
     (20, 'Ethical Hacking Techniques', 4);
 
--- Insert sample data into TRACKS table
-INSERT INTO TRACKS (TrackID, Name, PaperID) VALUES
-    (1, 'Track A', 1),
-    (2, 'Track B', 2),
-    (3, 'Track A', 3),
-    (4, 'Track C', 4),
-    (5, 'Track B', 5),
-    (6, 'Track C', 6),
-    (7, 'Track D', 7),
-    (8, 'Track A', 8),
-    (9, 'Track D', 9),
-    (10, 'Track C', 10),
-    (11, 'Track E', 11),
-    (12, 'Track F', 12),
-    (13, 'Track E', 13),
-    (14, 'Track F', 14),
-    (15, 'Track G', 15),
-    (16, 'Track H', 16),
-    (17, 'Track G', 17),
-    (18, 'Track H', 18),
-    (19, 'Track A', 19),
-    (20, 'Track B', 20);
-
 -- Insert sample data into PAPER_REVIEWERS table
 INSERT INTO PAPER_REVIEWERS (PaperID, ReviewerID) VALUES
     (1, 1),
