@@ -61,34 +61,6 @@ INSERT INTO PAPERS (PaperID, Title, AuthorID) VALUES
     (19, 'Robotics and Automation', 3),
     (20, 'Ethical Hacking Techniques', 4);
 
--- Insert sample data into PAPER_REVIEWERS table
-INSERT INTO PAPER_REVIEWERS (PaperID, ReviewerID) VALUES
-    (1, 1),
-    (1, 2),
-    (2, 2),
-    (2, 3),
-    (3, 3),
-    (3, 4),
-    (4, 1),
-    (4, 5),
-    (5, 3),
-    (5, 6),
-    (6, 1),
-    (7, 2),
-    (8, 3),
-    (9, 4),
-    (10, 5),
-    (11, 4),
-    (12, 5),
-    (13, 6),
-    (14, 1),
-    (15, 2),
-    (16, 3),
-    (17, 4),
-    (18, 5),
-    (19, 6),
-    (20, 1);
-
 -- Insert sample data into User table
 INSERT INTO User (id, username, password) VALUES
     (1, 'john_smith', 'password123'),
