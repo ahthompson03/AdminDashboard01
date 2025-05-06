@@ -9,7 +9,7 @@
 """Variables Index
         paper_list =                            list of all papers in the DB
         total_reviewers_assigned_per_paper =    total count of papers with the current paperid in paperreviewer table (usually 0 if the paper was recently added and no reviewers have been assigned yet)
-        while_loop_condition2 =                 number of reviewers per paper (How many reviewers should each paper be assigned)
+        total_reviewers_allowed_per_paper =                 number of reviewers per paper (How many reviewers should each paper be assigned)
         reviewer_obj =                          current reviewer that is not already assigned to the current paperid and has the least amount of paper assignments ordered by reviewerid ascending
 """
 
@@ -20,7 +20,7 @@ total_reviewers_assigned_per_paper = 0
 total_reviewers_allowed_per_paper = 3
 reviewer_obj = 'Test Reviewer Object'   #set to None to test missing reviewers
 
-def Assign_Reviewers():
+def assign_reviewers():
     try:
         papers = paper_list                                            #simulates a list of papers in the db
         current_paper_count = total_reviewers_assigned_per_paper       #simulates a list of reviewers already assigned to a paper

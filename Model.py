@@ -41,14 +41,14 @@ class User(db.Model):
 
 
 
-def Model(app):
+def model(app):
     try:
         db.create_all()
     except Exception:
         print('Error in Model, Database tables not created.')
 
 
-def DashBoardAnalytics():
+def dashboard_analytics():
     try:
         ReviewerCount = db.session.query(Reviewers.ReviewerID).count()
         PaperCount = db.session.query(Papers.PaperID).count()
@@ -56,7 +56,7 @@ def DashBoardAnalytics():
         PaperWithoutReviewer = db.session.query(func.count(Papers.PaperID)).outerjoin(PaperReviewers, Papers.PaperID == PaperReviewers.PaperID).filter(PaperReviewers.PaperID == None).scalar()
         ReviewerWithoutPaper = db.session.query(func.count(Reviewers.ReviewerID)).outerjoin(PaperReviewers, Reviewers.ReviewerID == PaperReviewers.ReviewerID).filter(PaperReviewers.ReviewerID == None).scalar()
     except Exception:
-        print('DashBoardAnalytics() Query Failed')
+        print('dashboard_analytics() Query Failed')
 
     return {
         'ReviewerCount': ReviewerCount,
@@ -77,7 +77,7 @@ if the reviewer is not already assigned the same paperid
 add the reviewer that show up the least
 do this for all papers until all papers show up 3 times in the reviewerpaper table
 """
-def Assign_Reviewers():
+def assign_reviewers():
     try:
         papers = db.session.query(Papers).order_by(Papers.PaperID.asc()).all()
         for paper in papers:
@@ -98,5 +98,5 @@ def Assign_Reviewers():
                     print(f"Warning: Could not find enough reviewers for Paper ID {paper.PaperID}.")
                     break
     except Exception:
-        print('AssignReviewers() function error')
+        print('assign_reviewers() function error')
 

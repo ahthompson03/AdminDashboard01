@@ -97,7 +97,7 @@ def logout():
 @app.route('/dashboard')
 @login_required
 def dashboard_viewer_controller():
-    queryResults = Model.DashBoardAnalytics()
+    queryResults = Model.dashboard_analytics()
     return render_template('Dashboard.html',
                            ReviewerCount = queryResults['ReviewerCount'],
                            PaperCount = queryResults['PaperCount'],
@@ -172,7 +172,7 @@ def delete_paper():
 @app.route('/auto_assign', methods=['POST'])
 @login_required
 def auto_assign():
-    Model.Assign_Reviewers()
+    Model.assign_reviewers()
     return redirect(url_for('paper_viewer_controller'))
 
 
@@ -275,7 +275,7 @@ def delete_author():
 
 if __name__ == '__main__':
     with app.app_context():
-        Model.Model(app)
+        Model.model(app)
     app.run(debug=True, host='127.0.0.1', port=5000)
 
 
