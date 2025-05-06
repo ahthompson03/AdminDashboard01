@@ -1,4 +1,3 @@
-
 from flask import Flask, render_template, request, redirect, url_for, flash, session
 from sqlalchemy.orm import joinedload
 from flask_bcrypt import Bcrypt
@@ -15,7 +14,7 @@ DATABASE_PASSWD = 'abc123'
 #initialize App
 app = Flask(__name__)
 
-#DataBase and app Config
+#database and app config
 app.config['SQLALCHEMY_DATABASE_URI'] = f'mysql+pymysql://{DATABASE_USER}:{DATABASE_PASSWD}@localhost/AdminDashboard'
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'fallback-secret')
 app.config['SESSION_PERMANENT'] = False
@@ -28,21 +27,22 @@ app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
 bcrypt = Bcrypt(app)
 #create reference to database and initialize
 Model.db.init_app(app)
-#create reference to the current session
 
 
-# Configure logging (you can place this near your app setup)
+# Configure logging
 logging.basicConfig(
     filename='admin_actions.log',
     level=logging.INFO,
     format='%(asctime)s - %(levelname)s - %(message)s'
 )
 
+
 #Session tracking
+#Check to see if user is authenticated
 def is_authenticated():
     username = session.get('username')
     return username
-
+#If user does not have current session redirect to login
 def login_required(f):
     @wraps(f)
     def wrapper(*args, **kwargs):
@@ -51,18 +51,19 @@ def login_required(f):
         return f(*args, **kwargs)
     return wrapper
 
-# ROUTES
+#Subdomains and ROUTES
 @app.errorhandler(500)
 def internal_error(error):
     return render_template("500.html"), 500
 
-
+#Index page takes you to admin dashboard
 @app.route('/')
 @login_required
 def index():
     return redirect(url_for('dashboard_viewer_controller'))
 
 
+#registration page
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
@@ -82,6 +83,7 @@ def register():
     return render_template('register.html')
 
 
+#login page
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
@@ -101,7 +103,7 @@ def login():
             flash('Invalid credentials. Please try again.', 'danger')
     return render_template('login.html')
 
-
+#logout page
 @app.route('/logout')
 @login_required
 def logout():

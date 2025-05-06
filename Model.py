@@ -40,14 +40,14 @@ class User(db.Model):
     password = Column(String(150), nullable=False)
 
 
-
+#any database action that need to happen on start should be placed here
 def model(app):
     try:
         db.create_all()
     except Exception:
         print('Error in Model, Database tables not created.')
 
-
+#query all data related to the dashboard
 def dashboard_analytics():
     try:
         ReviewerCount = db.session.query(Reviewers.ReviewerID).count()
@@ -67,10 +67,9 @@ def dashboard_analytics():
 
     }
 
-
 """
 Cycle through all papers starting at paper 1
-if paper shows up in reviewerpaper table  less then 4 times add a paper with that id
+if paper shows up in reviewerpaper table  less then 3 times add a paper with that id
 when paper is added cycle through all reviewers
 reviewers must be checked by amount of times they show up  in reviewerpaper table ordered by reviewerid
 if the reviewer is not already assigned the same paperid
