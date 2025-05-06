@@ -1,6 +1,5 @@
-from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import Column, Integer, String, VARCHAR, ForeignKey, Table, func
+from sqlalchemy import Column, Integer, String, VARCHAR, ForeignKey, func
 from sqlalchemy.orm import relationship
 
 # initialize database

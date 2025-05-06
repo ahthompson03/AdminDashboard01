@@ -1,7 +1,8 @@
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 from flask_bcrypt import Bcrypt
 import Model as Model
-from Model import Papers, Authors
+import logging
+import os
 
 #database global variables
 DATABASE_USER = 'abc'
@@ -18,6 +19,22 @@ app.config['SECRET_KEY'] = 'your_secret_key'
 bcrypt = Bcrypt(app)
 #create reference to database and initialize
 Model.db.init_app(app)
+
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'fallback-secret')
+app.config['SESSION_COOKIE_SECURE'] = True  # Use HTTPS
+app.config['SESSION_COOKIE_HTTPONLY'] = True
+app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
+
+# Configure logging (you can place this near your app setup)
+logging.basicConfig(
+    filename='admin_actions.log',
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s'
+)
+
+@app.errorhandler(500)
+def internal_error(error):
+    return render_template("500.html"), 500
 
 #username = 'test@jack.com'
 
@@ -152,14 +169,17 @@ def auto_assign():
 
 
 """Reviewer: Viewer/Controller Consists of main page 'reviewer_viewer_controller', subpage 'add_reviewer', and subpage 'delete_reviewer'"""
+from sqlalchemy.orm import joinedload
+
 @app.route('/reviewers')
 def reviewer_viewer_controller():
     try:
-        reviewers = Model.Reviewers.query.all()
-    except Exception:
-        print('Query Failed')
+        reviewers = Model.Reviewers.query.options(joinedload(Model.Reviewers.papers)).all()
+    except Exception as e:
+        print('Query Failed:', e)
         return render_template('Reviewer.html')
     return render_template('Reviewer.html', reviewers=reviewers)
+
 
 
 @app.route('/add_reviewer', methods=['POST'])
