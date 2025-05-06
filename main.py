@@ -1,8 +1,10 @@
 from flask import Flask, render_template, request, redirect, url_for, session, flash
+from flask_session import Session
 from flask_bcrypt import Bcrypt
 import Model as Model
 import logging
 import os
+from functools import wraps
 
 #database global variables
 DATABASE_USER = 'abc'
@@ -14,11 +16,16 @@ app = Flask(__name__)
 #DataBase and app Config
 app.config['SQLALCHEMY_DATABASE_URI'] = f'mysql+pymysql://{DATABASE_USER}:{DATABASE_PASSWD}@localhost/AdminDashboard'
 app.config['SECRET_KEY'] = 'your_secret_key'
+app.config['SESSION_PERMANENT'] = False
+app.config['SESSION_TYPE'] = 'filesystem'
 
 #initialize bcrypt
 bcrypt = Bcrypt(app)
 #create reference to database and initialize
 Model.db.init_app(app)
+#create reference to the current session
+Session(app)
+
 
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'fallback-secret')
 app.config['SESSION_COOKIE_SECURE'] = True  # Use HTTPS
@@ -37,8 +44,26 @@ def internal_error(error):
     return render_template("500.html"), 500
 
 #username = 'test@jack.com'
+#Session tracking
+def is_authenticated():
+    username = session.get('username')
+    return username
+
+def login_required(f):
+    @wraps(f)
+    def wrapper(*args, **kwargs):
+        if not is_authenticated():
+            return redirect(url_for('login'))
+        return f(*args, **kwargs)
+    return wrapper
 
 # ROUTES
+@app.route('/')
+@login_required
+def index():
+    return redirect(url_for('dashboard_viewer_controller'))
+
+
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
@@ -70,7 +95,7 @@ def login():
             return render_template('login.html')
 
         if user and bcrypt.check_password_hash(user.password, password):
-            session['user_id'] = user.id
+            session['username'] = user.id
             flash('Login successful!', 'success')
             return redirect(url_for('dashboard_viewer_controller'))
         else:
@@ -79,8 +104,9 @@ def login():
 
 
 @app.route('/logout')
+@login_required
 def logout():
-    session.pop('user_id', None)
+    session.pop('username', None)
     flash('You have been logged out.', 'info')
     return redirect(url_for('login'))
 
@@ -88,7 +114,9 @@ def logout():
 
 """Dashboard: Viewer/Controller Consists of only one page named dashboard_viewer_controller"""
 @app.route('/dashboard')
+@login_required
 def dashboard_viewer_controller():
+    queryResults = Model.dashboard_analytics()
     query_results = Model.DashBoardAnalytics()
     return render_template('Dashboard.html',
                            ReviewerCount = query_results['ReviewerCount'],
@@ -102,6 +130,7 @@ def dashboard_viewer_controller():
 
 """Paper: Viewer/Controller Consists of main page 'paper_viewer_controller', subpage 'add_paper',subpage 'delete_paper, and subpage 'auto_assign'"""
 @app.route('/papers')
+@login_required
 def paper_viewer_controller():
     try:
         papers = Model.db.session.query(Model.Authors, Model.Papers).join(Model.Papers, Model.Authors.AuthorID == Model.Papers.AuthorID).order_by(Model.Papers.PaperID).all()
@@ -112,6 +141,7 @@ def paper_viewer_controller():
 
 
 @app.route('/add_paper', methods=['POST'])
+@login_required
 def add_paper():
     title = request.form['title']
     first_name = request.form['first_name']
@@ -131,10 +161,8 @@ def add_paper():
             Model.db.session.add(new_paper)
             Model.db.session.commit()
             print(Model.Papers.query.filter_by(Title=title).first())
-            flash('Paper added successfully!', 'success')
             return redirect(url_for('paper_viewer_controller'))
         else:
-            flash('Paper Already Exists!', 'warning')
             return redirect(url_for('paper_viewer_controller'))
     except Exception:
         print('Error in adding paper')
@@ -142,13 +170,13 @@ def add_paper():
 
 
 @app.route('/delete_paper', methods=['POST'])
+@login_required
 def delete_paper():
     paper_id = request.form['paper_id']
     try:
         paper_reviewers = Model.db.session.query(Model.PaperReviewers).join(Model.Papers, Model.PaperReviewers.PaperID == Model.Papers.PaperID).filter(Model.Papers.PaperID == paper_id).all()
         paper = Model.db.session.query(Model.Papers).filter(Model.Papers.PaperID == paper_id).first()
         if not paper:
-            flash(f"No Paper found with ID: {paper_id}.", "warning")
             print('paper not found')
             return redirect(url_for('paper_viewer_controller'))
         for paperreviewer in paper_reviewers:
@@ -162,8 +190,9 @@ def delete_paper():
 
 
 @app.route('/auto_assign', methods=['POST'])
+@login_required
 def auto_assign():
-    Model.Assign_Reviewers()
+    Model.assign_reviewers()
     return redirect(url_for('paper_viewer_controller'))
 
 
@@ -172,6 +201,7 @@ def auto_assign():
 from sqlalchemy.orm import joinedload
 
 @app.route('/reviewers')
+@login_required
 def reviewer_viewer_controller():
     try:
         reviewers = Model.Reviewers.query.options(joinedload(Model.Reviewers.papers)).all()
@@ -183,6 +213,7 @@ def reviewer_viewer_controller():
 
 
 @app.route('/add_reviewer', methods=['POST'])
+@login_required
 def add_reviewer():
     first_name = request.form['first_name']
     last_name = request.form['last_name']
@@ -190,7 +221,6 @@ def add_reviewer():
     try:
         Model.db.session.add(new_reviewer)
         Model.db.session.commit()
-        flash('Reviewer added successfully!', 'success')
         return redirect(url_for('reviewer_viewer_controller'))
     except Exception:
         print('Error in adding reviewer')
@@ -198,13 +228,13 @@ def add_reviewer():
 
 
 @app.route('/delete_reviewer', methods=['POST'])
+@login_required
 def delete_reviewer():
     reviewer_id = request.form['reviewer_id']
     try:
         paper_reviewers = Model.db.session.query(Model.PaperReviewers).join(Model.Papers, Model.PaperReviewers.PaperID == Model.Papers.PaperID).filter(Model.Papers.PaperID == reviewer_id).all()
         reviewer = Model.db.session.query(Model.Reviewers).filter(Model.Reviewers.ReviewerID == reviewer_id).first()
         if not reviewer:
-            flash(f"No Reviewer found with ID: {reviewer_id}.", "warning")
             return redirect(url_for('reviewer_viewer_controller'))
         for paperreviewer in paper_reviewers:
             Model.db.session.delete(paperreviewer)
@@ -218,6 +248,7 @@ def delete_reviewer():
 
 """Author: Viewer/Controller Consists of main page 'author_viewer_controller', subpage 'add_author', and subpage 'delete_author'"""
 @app.route('/authors')
+@login_required
 def author_viewer_controller():
     try:
         authors = Model.Authors.query.all()
@@ -228,6 +259,7 @@ def author_viewer_controller():
 
 
 @app.route('/add_author', methods=['POST'])
+@login_required
 def add_author():
     first_name = request.form['first_name']
     last_name = request.form['last_name']
@@ -235,7 +267,6 @@ def add_author():
     try:
         Model.db.session.add(new_author)
         Model.db.session.commit()
-        flash('Author added successfully!', 'success')
         return redirect(url_for('author_viewer_controller'))
     except Exception:
         print('Error in adding author')
@@ -243,6 +274,7 @@ def add_author():
 
 
 @app.route('/delete_author', methods=['POST'])
+@login_required
 def delete_author():
     author_id = request.form['author_id']
     try:
@@ -250,7 +282,6 @@ def delete_author():
         paper_reviewers = Model.db.session.query(Model.PaperReviewers).join(Model.Papers, Model.PaperReviewers.PaperID == Model.Papers.PaperID).filter(Model.Papers.AuthorID == author_id).all()
         author = Model.db.session.query(Model.Authors).filter(Model.Authors.AuthorID == author_id).first()
         if not author:
-            flash(f"No author found with ID: {author_id}.", "warning")
             return redirect(url_for('author_viewer_controller'))
         for paperreviewer in paper_reviewers:
             Model.db.session.delete(paperreviewer)
@@ -267,7 +298,7 @@ def delete_author():
 
 if __name__ == '__main__':
     with app.app_context():
-        Model.Model(app)
+        Model.model(app)
     app.run(debug=True, host='127.0.0.1', port=5000)
 
 
