@@ -1,5 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, session, flash
-from flask_session import Session
+from flask import Flask, render_template, request, redirect, url_for, flash, session
 from flask_bcrypt import Bcrypt
 import Model as Model
 from functools import wraps
@@ -26,12 +25,15 @@ bcrypt = Bcrypt(app)
 #create reference to database and initialize
 Model.db.init_app(app)
 #create reference to the current session
-Session(app)
+
+#Session(app)
+
 
 #might need to move session app
 app.config['SESSION_COOKIE_SECURE'] = True  # Use HTTPS
 app.config['SESSION_COOKIE_HTTPONLY'] = True
 app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
+
 
 # Configure logging (you can place this near your app setup)
 logging.basicConfig(
