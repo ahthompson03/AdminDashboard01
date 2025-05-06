@@ -2,6 +2,8 @@ from flask import Flask, render_template, request, redirect, url_for, session, f
 from flask_session import Session
 from flask_bcrypt import Bcrypt
 import Model as Model
+import logging
+import os
 from functools import wraps
 
 #database global variables
@@ -25,6 +27,23 @@ Model.db.init_app(app)
 Session(app)
 
 
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'fallback-secret')
+app.config['SESSION_COOKIE_SECURE'] = True  # Use HTTPS
+app.config['SESSION_COOKIE_HTTPONLY'] = True
+app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
+
+# Configure logging (you can place this near your app setup)
+logging.basicConfig(
+    filename='admin_actions.log',
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s'
+)
+
+@app.errorhandler(500)
+def internal_error(error):
+    return render_template("500.html"), 500
+
+#username = 'test@jack.com'
 #Session tracking
 def is_authenticated():
     username = session.get('username')
@@ -98,12 +117,13 @@ def logout():
 @login_required
 def dashboard_viewer_controller():
     queryResults = Model.dashboard_analytics()
+    query_results = Model.DashBoardAnalytics()
     return render_template('Dashboard.html',
-                           ReviewerCount = queryResults['ReviewerCount'],
-                           PaperCount = queryResults['PaperCount'],
-                           AuthorCount = queryResults['AuthorCount'],
-                           PaperWithoutReviewer = queryResults['PaperWithoutReviewer'],
-                           ReviewerWithoutPaper = queryResults['ReviewerWithoutPaper'])
+                           ReviewerCount = query_results['ReviewerCount'],
+                           PaperCount = query_results['PaperCount'],
+                           AuthorCount = query_results['AuthorCount'],
+                           PaperWithoutReviewer = query_results['PaperWithoutReviewer'],
+                           ReviewerWithoutPaper = query_results['ReviewerWithoutPaper'])
 
 
 
@@ -178,15 +198,18 @@ def auto_assign():
 
 
 """Reviewer: Viewer/Controller Consists of main page 'reviewer_viewer_controller', subpage 'add_reviewer', and subpage 'delete_reviewer'"""
+from sqlalchemy.orm import joinedload
+
 @app.route('/reviewers')
 @login_required
 def reviewer_viewer_controller():
     try:
-        reviewers = Model.Reviewers.query.all()
-    except Exception:
-        print('Query Failed')
+        reviewers = Model.Reviewers.query.options(joinedload(Model.Reviewers.papers)).all()
+    except Exception as e:
+        print('Query Failed:', e)
         return render_template('Reviewer.html')
     return render_template('Reviewer.html', reviewers=reviewers)
+
 
 
 @app.route('/add_reviewer', methods=['POST'])

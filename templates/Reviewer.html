@@ -10,12 +10,11 @@
         body {
             font-family: 'Inter', sans-serif;
         }
-         .topnav {
+        .topnav {
             background-color: #333;
             overflow: hidden;
         }
 
-        /* Style the links inside the navigation bar */
         .topnav a {
             float: left;
             color: #f2f2f2;
@@ -25,80 +24,83 @@
             font-size: 17px;
         }
 
-        /* Change the color of links on hover */
         .topnav a:hover {
             background-color: #ddd;
             color: black;
         }
 
-        /* Add a color to the active/current link */
         .topnav a.reviewers {
             background-color: #04AA6D;
             color: white;
         }
-                /* Add a color to the active/current link */
+
         .topnav a.Logout {
-            color: #f2f2f2;
-            text-align: center;
-            padding: 14px 40px;
-            font-size: 17px;
             color: white;
             float: right;
+            padding: 14px 40px;
+            font-size: 17px;
         }
 
         .container {
-            max-width: 960px; /* Adjust as needed to match the other page */
+            max-width: 960px;
             margin-left: auto;
             margin-right: auto;
             padding-left: 1rem;
             padding-right: 1rem;
         }
-
     </style>
 </head>
 <body class="bg-gray-100 p-6">
 
     <div class="topnav">
-        <a class = "Logout" href="logout">Logout</a>
+        <a class="Logout" href="logout">Logout</a>
         <a class="Dashboard" href="dashboard">Dashboard</a>
         <a class="Papers" href="papers">Papers</a>
         <a class="reviewers" href="reviewers">Reviewers</a>
         <a class="authors" href="authors">Authors</a>
     </div>
 
-<div class="bg-gray-100 text-gray-900">
-    <div class="container mx-auto px-4 py-6">
+    <div class="max-w-7xl mx-auto mt-10">
+        <div class="flex flex-wrap items-center gap-4 mb-6">
+            <!-- Add Reviewer -->
+            <span class="font-semibold mr-2">Add Reviewer:</span>
+            <input type="text" name="first_name" form="add-reviewer-form" placeholder="First Name" required class="p-2 border border-gray-300 rounded w-40">
+            <input type="text" name="last_name" form="add-reviewer-form" placeholder="Last Name" required class="p-2 border border-gray-300 rounded w-40">
+            <form action="{{ url_for('add_reviewer') }}" method="POST" id="add-reviewer-form">
+                <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Add</button>
+            </form>
 
+            <!-- Delete Reviewer -->
+            <span class="font-semibold ml-8 mr-2">Delete Reviewer by ID:</span>
+            <input type="number" name="reviewer_id" form="delete-reviewer-form" placeholder="Reviewer ID" required min="1" class="p-2 border border-gray-300 rounded w-32">
+            <form action="{{ url_for('delete_reviewer') }}" method="POST" id="delete-reviewer-form" onsubmit="return confirm('Are you sure you want to delete this reviewer?');">
+                <button type="submit" class="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700">Delete</button>
+            </form>
+        </div>
 
-        <!-- Add Reviewer Form -->
- <div class="flex flex-wrap items-center gap-4 mb-6">
-    <!-- Add Reviewer -->
-    <span class="font-semibold mr-2">Add Reviewer:</span>
-    <input type="text" name="first_name" form="add-form" placeholder="First Name" required class="p-2 border border-gray-300 rounded w-40">
-    <input type="text" name="last_name" form="add-form" placeholder="Last Name" required class="p-2 border border-gray-300 rounded w-40">
-    <form action="{{ url_for('add_reviewer') }}" method="POST" id="add-form">
-        <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Add</button>
-    </form>
-
-    <!-- Delete Reviewer -->
-    <span class="font-semibold ml-8 mr-2">Delete Reviewer by ID:</span>
-    <input type="number" name="reviewer_id" form="delete-form" placeholder="ID" required min="1" class="p-2 border border-gray-300 rounded w-32">
-    <form action="{{ url_for('delete_reviewer') }}" method="POST" id="delete-form">
-        <button type="submit" class="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700">Delete</button>
-    </form>
-</div>
-
-<h1 class="text-2xl font-bold mb-4">Reviewer List</h1>
-        <!-- Reviewer Table -->
+        <!-- Current Reviewers -->
         <h2 class="text-xl font-semibold text-gray-700 mt-8 mb-2">Current Reviewers</h2>
-        <ul class="bg-white p-4 rounded shadow space-y-2">
-            {% for reviewer in reviewers %}
-                <li class="border-b py-2">{{ reviewer.FirstName }} {{ reviewer.LastName }} (ID: {{ reviewer.ReviewerID }})</li>
+<ul class="bg-white p-4 rounded shadow space-y-4">
+    {% for reviewer in reviewers %}
+        <li class="border-b pb-2">
+            <div class="font-medium">{{ reviewer.FirstName }} {{ reviewer.LastName }} (ID: {{ reviewer.ReviewerID }})</div>
+            {% if reviewer.papers %}
+                <div class="text-sm text-gray-600 mt-1">Assigned Papers:</div>
+                <ul class="list-disc list-inside text-sm text-gray-700 ml-4">
+                    {% for paper in reviewer.papers %}
+                        <li>{{ paper.Title }} (Paper ID: {{ paper.PaperID }})</li>
+                    {% endfor %}
+                </ul>
             {% else %}
-                <li>No reviewer found.</li>
-            {% endfor %}
-        </ul>
+                <div class="text-sm text-gray-500">No papers assigned.</div>
+            {% endif %}
+        </li>
+    {% else %}
+        <li>No reviewers found.</li>
+    {% endfor %}
+</ul>
+
     </div>
-</div>
+
 </body>
 </html>
