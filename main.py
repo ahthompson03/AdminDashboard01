@@ -1,9 +1,12 @@
-
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 from flask_session import Session
 from flask_bcrypt import Bcrypt
 import Model as Model
 from functools import wraps
+import logging
+import os
+from sqlalchemy.orm import joinedload
+
 
 #database global variables
 DATABASE_USER = 'abc'
@@ -14,7 +17,7 @@ app = Flask(__name__)
 
 #DataBase and app Config
 app.config['SQLALCHEMY_DATABASE_URI'] = f'mysql+pymysql://{DATABASE_USER}:{DATABASE_PASSWD}@localhost/AdminDashboard'
-app.config['SECRET_KEY'] = 'your_secret_key'
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'fallback-secret')
 app.config['SESSION_PERMANENT'] = False
 app.config['SESSION_TYPE'] = 'filesystem'
 
@@ -25,6 +28,17 @@ Model.db.init_app(app)
 #create reference to the current session
 Session(app)
 
+#might need to move session app
+app.config['SESSION_COOKIE_SECURE'] = True  # Use HTTPS
+app.config['SESSION_COOKIE_HTTPONLY'] = True
+app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
+
+# Configure logging (you can place this near your app setup)
+logging.basicConfig(
+    filename='admin_actions.log',
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s'
+)
 
 #Session tracking
 def is_authenticated():
@@ -40,6 +54,11 @@ def login_required(f):
     return wrapper
 
 # ROUTES
+@app.errorhandler(500)
+def internal_error(error):
+    return render_template("500.html"), 500
+
+
 @app.route('/')
 @login_required
 def index():
@@ -98,13 +117,13 @@ def logout():
 @app.route('/dashboard')
 @login_required
 def dashboard_viewer_controller():
-    queryResults = Model.dashboard_analytics()
+    query_results = Model.dashboard_analytics()
     return render_template('Dashboard.html',
-                           ReviewerCount = queryResults['ReviewerCount'],
-                           PaperCount = queryResults['PaperCount'],
-                           AuthorCount = queryResults['AuthorCount'],
-                           PaperWithoutReviewer = queryResults['PaperWithoutReviewer'],
-                           ReviewerWithoutPaper = queryResults['ReviewerWithoutPaper'])
+                           ReviewerCount = query_results['ReviewerCount'],
+                           PaperCount = query_results['PaperCount'],
+                           AuthorCount = query_results['AuthorCount'],
+                           PaperWithoutReviewer = query_results['PaperWithoutReviewer'],
+                           ReviewerWithoutPaper = query_results['ReviewerWithoutPaper'])
 
 
 
@@ -183,7 +202,7 @@ def auto_assign():
 @login_required
 def reviewer_viewer_controller():
     try:
-        reviewers = Model.Reviewers.query.all()
+        reviewers = Model.Reviewers.query.options(joinedload(Model.Reviewers.papers)).all()
     except Exception:
         print('Query Failed')
         return render_template('Reviewer.html')
