@@ -20,9 +20,12 @@ bcrypt = Bcrypt(app)
 #create reference to database and initialize
 Model.db.init_app(app)
 
-#username = 'test@jack.com'
-
 # ROUTES
+@app.route('/')
+def home():
+    return redirect(url_for('dashboard_viewer_controller'))
+
+
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
@@ -97,9 +100,11 @@ def paper_viewer_controller():
 
 @app.route('/add_paper', methods=['POST'])
 def add_paper():
+
     title = request.form['title']
     first_name = request.form['first_name']
     last_name = request.form['last_name']
+
     try:
         author = Model.Authors.query.filter_by(FirstName=first_name, LastName=last_name).first()
         if not author:

@@ -91,29 +91,14 @@
 
 <h1 class="text-2xl font-bold mb-4">Reviewer List</h1>
         <!-- Reviewer Table -->
-
-        <table class="min-w-full bg-white border border-gray-300">
-            <thead>
-                <tr>
-                    <th class="py-2 px-4 border-b">Reviewer ID</th>
-                    <th class="py-2 px-4 border-b">First Name</th>
-                    <th class="py-2 px-4 border-b">Last Name</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for reviewer in reviewers %}
-                <tr>
-                    <td class="py-2 px-4 border-b">{{ reviewer.ReviewerID }}</td>
-                    <td class="py-2 px-4 border-b">{{ reviewer.FirstName }}</td>
-                    <td class="py-2 px-4 border-b">{{ reviewer.LastName }}</td>
-                </tr>
-                {% else %}
-                <tr>
-                    <td colspan="3" class="py-2 px-4 text-center">No reviewers found.</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+        <h2 class="text-xl font-semibold text-gray-700 mt-8 mb-2">Current Reviewers</h2>
+        <ul class="bg-white p-4 rounded shadow space-y-2">
+            {% for reviewer in reviewers %}
+                <li class="border-b py-2">{{ reviewer.FirstName }} {{ reviewer.LastName }} (ID: {{ reviewer.ReviewerID }})</li>
+            {% else %}
+                <li>No reviewer found.</li>
+            {% endfor %}
+        </ul>
     </div>
 </div>
 </body>
