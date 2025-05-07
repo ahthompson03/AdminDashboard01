@@ -243,6 +243,26 @@ def delete_reviewer():
         print('Error in deleting reviewer')
         return redirect(url_for('reviewer_viewer_controller'))
 
+@app.route('/delete_assignment', methods=['POST'])
+@login_required
+def delete_assignment():
+    if request.method == 'POST':
+        paper_id = request.form['paper_id']
+        try:
+            paper_reviewers = Model.db.session.query(Model.PaperReviewers).join(Model.Papers,Model.PaperReviewers.PaperID == Model.Papers.PaperID).filter(Model.Papers.PaperID == paper_id).all()
+            if not paper_reviewers:
+                print('paper not found')
+                return redirect(url_for('reviewer_viewer_controller'))
+            for paperreviewer in paper_reviewers:
+                Model.db.session.delete(paperreviewer)
+            Model.db.session.commit()
+            return redirect(url_for('reviewer_viewer_controller'))
+        except Exception:
+            print('Error in deleting paper')
+            return redirect(url_for('reviewer_viewer_controller'))
+
+
+
 """Author: Viewer/Controller Consists of main page 'author_viewer_controller', subpage 'add_author', and subpage 'delete_author'"""
 @app.route('/authors')
 @login_required
