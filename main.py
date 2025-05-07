@@ -6,6 +6,7 @@ from functools import wraps
 import logging
 import os
 
+from Model import Papers
 
 #database global variables
 DATABASE_USER = 'abc'
@@ -138,6 +139,18 @@ def paper_viewer_controller():
         print('Query Failed')
         return render_template('Papers.html')
     return render_template('Papers.html', papers = papers)
+
+
+@app.route('/search_paper', methods=['POST'])
+@login_required
+def search_paper():
+    title = request.form['title']
+    try:
+        papers = Model.db.session.query(Model.Authors, Model.Papers).join(Model.Papers,Model.Authors.AuthorID == Model.Papers.AuthorID).filter_by(Title=title).all()
+    except Exception:
+        print('Query Failed')
+        return redirect(url_for('paper_viewer_controller'))
+    return render_template('PaperSearch.html', papers = papers)
 
 
 @app.route('/add_paper', methods=['POST'])
